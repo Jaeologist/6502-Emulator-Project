@@ -7,8 +7,8 @@ In the beginning of the session struggled figuring out how using the 'commit -m'
 
 Progress
 
--Added ABSOLUTEX, ABSOLUTEY, ZEROPAGE, ZEROPAGEX mode.
--Create a 0x42command.
--Added push method. 
--Added DBG(0x42).  
--Added print_status method.
+- Added ABSOLUTEX, ABSOLUTEY, ZEROPAGE, ZEROPAGEX mode.
+- Create a 0x42 command.
+- Added push method. 
+- Added DBG(0x42).  
+- Added print_status method.
