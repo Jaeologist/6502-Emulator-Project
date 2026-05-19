@@ -3,8 +3,15 @@ from enum import Enum, auto
 #Gives numerical values
 class Mode(Enum):
     IMMEDIATE = auto()
-    IMPLIED = auto()
+    ZEROPAGE = auto()
+    ZEROPAGEX = auto()
     ABSOLUTE = auto()
+    ABSOLUTEX = auto()
+    ABSOLUTEY = auto()
+    IMPLIED = auto()
+    
+    
+
 
 class CPU:
     def __init__(self):
@@ -17,9 +24,16 @@ class CPU:
         self.y = 0x00
         self.pc = 0x1000
 
-        self.commands = { 
-            #Immediate Mode
+        self.commands = {  
+            0x42: {"func": self.print_status, "m": Mode.IMPLIED},
+
+            
             0xA9: {"func": self.LDA, "m": Mode.IMMEDIATE},
+            0xA5: {"func": self.LDA, "m": Mode.ZEROPAGE},
+            0xB5: {"func": self.LDA, "m": Mode.ZEROPAGEX},
+            0xBD: {"func": self.LDA, "m": Mode.ABSOLUTEX},
+            0xB9: {"func": self.LDA, "m": Mode.ABSOLUTEY},
+
             0xA2: {"func": self.LDX, "m": Mode.IMMEDIATE},
             0xA0: {"func": self.LDY, "m": Mode.IMMEDIATE},
 
@@ -28,6 +42,7 @@ class CPU:
             0x8E: {"func": self.STX, "m": Mode.ABSOLUTE},
             0x8C: {"func": self.STY, "m": Mode.ABSOLUTE},
 
+            #Implied Mode
             0xE8: {"func": self.INX, "m": Mode.IMPLIED},
             0XC8: {"func":self.INY, "m": Mode.IMPLIED},
 
@@ -40,8 +55,12 @@ class CPU:
 
         self.increments = {
             Mode.IMMEDIATE: 2,
+            Mode.ZEROPAGE: 2,
+            Mode.ZEROPAGEX: 2,
             Mode.ABSOLUTE: 3,
-            Mode.IMPLIED: 1
+            Mode.IMPLIED: 1,
+            Mode.ABSOLUTEX: 3,
+            Mode.ABSOLUTEY: 3
         }
 
     def tick(self):
@@ -63,11 +82,32 @@ class CPU:
         loc = 0
 
         if mode == Mode.IMMEDIATE:
-            loc = self.pc +1
+            loc = self.pc + 1
+
         elif mode == Mode.ABSOLUTE:
             lsb = self.memory[self.pc+1] 
             msb = self.memory[self.pc+2] 
             loc = msb * 256 + lsb
+
+        elif mode == Mode.ABSOLUTEX:
+            lsb = self.memory[self.pc+1] 
+            msb = self.memory[self.pc+2] 
+            loc = msb * 256 + lsb
+            loc += self.x
+
+        elif mode == Mode.ABSOLUTEY:
+            lsb = self.memory[self.pc+1] 
+            msb = self.memory[self.pc+2] 
+            loc = msb * 256 + lsb
+            loc += self.y
+        
+        elif mode == Mode.ZEROPAGE:
+            lsb = self.memory[self.pc+1] 
+            loc = lsb
+
+        elif mode == Mode.ZEROPAGE:
+            lsb = self.memory[self.pc+1] 
+            loc = lsb
 
         return loc
 
@@ -142,52 +182,47 @@ class CPU:
         self.memory[self.pc] = value
         self.pc += 1
     
+    def print_status(self, mode):
+        print(f"A: {self.a}, X: {self.x}, Y: {self.y}, PC: {self.pc}")
+        input() #changes made
+
 #CPU object
 cpu = CPU()
 print(cpu.a)
 
 cpu.pc = 0x1000
 
-cpu.push(0xA9)   #LDA 0x44
-cpu.push(0x44)
+cpu.push(0xA9) #LDA #0x0A
+cpu.push(0x0A)
 
-cpu.push(0xA2) #LDX 0x45
-cpu.push(0x45)
+cpu.push(0x42) #DBG
 
-cpu.push(0xA0) #LDY 0x46
-cpu.push(0x46) 
-
-cpu.push(0x8D) #STA $4400 
-cpu.push(0x00)
-cpu.push(0x44)
-
-cpu.push(0x8E) #STX 
+cpu.push(0x8D) #STA 4401 
 cpu.push(0x01)
 cpu.push(0x44)
 
-cpu.push(0x8C) #STY
-cpu.push(0x02)
+cpu.push(0x42) #DBG
+
+cpu.push(0xA2)   #LDX #0x01
+cpu.push(0x01)
+
+cpu.push(0xBD)   #LDA 0x4400, X
+cpu.push(0x00)
 cpu.push(0x44)
 
-cpu.push(0xE8) #INX
-cpu.push(0xC8)
+cpu.push(0x42) #DBG
+
+cpu.push(0xA5) #LDA 
+cpu.push(0x55) 
+
+cpu.push(0x42) #DBG
 
 cpu.pc = 0x1000
 
 for _ in range(100):
     cpu.tick()
 
-
-print(cpu.a)
-print(cpu.x)
-print(cpu.y)
-
 print()
-
 print(cpu.memory[0x4400])
 print(cpu.memory[0x4401])
 print(cpu.memory[0x4402])
-
-
-#print(0x1000)
-# when print(0x1000) it prints out 4096 
