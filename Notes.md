@@ -15,6 +15,10 @@ Progress
 May 19th, 2026
 
 Challenges
+Before I finished my session for the day, I ran my code and noticed that my program is only running results from the program counter location 4110. I have to reread my lines and make adjustments to why my program is not working correctly. 
 
 Progress
-- 
+- Added INDIRECT mode
+- Created flags carry, interrupt, overflow, decimal to determine whether it's on or off.
+- Added commands CLC, SEC, CLI, SEI, CLV, CLD, SED, and JMP
+- Created a system file to load, store, and jump data. 
