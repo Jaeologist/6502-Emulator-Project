@@ -1,5 +1,4 @@
 #6502 CPU System
-
 from cpu6502 import *
 
 #CPU object
@@ -8,34 +7,34 @@ print(cpu.a)
 
 cpu.pc = 0x1000
 
-cpu.push(0xA9) #LDA #0x0A
-cpu.push(0x0A)
+cpu.push(0xA9) #LDA 0x0D LSB 0x100D
+cpu.push(0x0D)
 
-cpu.push(0x42) #DBG
-
-cpu.push(0x8D) #STA 4401 
-cpu.push(0x01)
-cpu.push(0x44)
-
-cpu.push(0x42) #DBG
-
-cpu.push(0xA2)   #LDX #0x01
-cpu.push(0x01)
-
-cpu.push(0xBD)   #LDA 0x4400, X
+cpu.push(0x8D) #STA 2000
 cpu.push(0x00)
-cpu.push(0x44)
+cpu.push(0x20)
+
+cpu.push(0xA9) #LDA 0x10 MSB 0x100D
+cpu.push(0x10)
+
+cpu.push(0x8D) #STA 2001
+cpu.push(0x01)
+cpu.push(0x20)
+
+cpu.push(0xA9) #LDA 0x02
+cpu.push(0x02)
+
+cpu.push(0xAA) #TAX
+cpu.push(0xCA) #DEX LOC 0x100D
 
 cpu.push(0x42) #DBG
-
-cpu.push(0xA5) #LDA 
-cpu.push(0x55) 
-
-cpu.push(0x42) #DBG
+cpu.push(0x6C) #JMP 0x2000 (loop)
+cpu.push(0x00)
+cpu.push(0x20)
 
 cpu.pc = 0x1000
 
-for _ in range(100):
+for _ in range(30):
     cpu.tick()
 
 print()

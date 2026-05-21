@@ -1,4 +1,5 @@
 from enum import Enum, auto
+from pickle import FALSE
 
 #Gives numerical values
 class Mode(Enum):
@@ -9,9 +10,7 @@ class Mode(Enum):
     ABSOLUTEX = auto()
     ABSOLUTEY = auto()
     IMPLIED = auto()
-    
-    
-
+    INDIRECT = auto()
 
 class CPU:
     def __init__(self):
@@ -24,10 +23,16 @@ class CPU:
         self.y = 0x00
         self.pc = 0x1000
 
+        
+        self.carry = False;
+        self.interrupt = False;
+        self.overflow = False;
+        self.decimal = False;
+
+
         self.commands = {  
             0x42: {"func": self.print_status, "m": Mode.IMPLIED},
 
-            
             0xA9: {"func": self.LDA, "m": Mode.IMMEDIATE},
             0xA5: {"func": self.LDA, "m": Mode.ZEROPAGE},
             0xB5: {"func": self.LDA, "m": Mode.ZEROPAGEX},
@@ -50,7 +55,19 @@ class CPU:
             0X8A: {"func":self.TXA, "m": Mode.IMPLIED},
             0XA8: {"func":self.TAY, "m": Mode.IMPLIED},
             0X98: {"func":self.TYA, "m": Mode.IMPLIED},
+            0xCA: {"func":self.DEX, "m": Mode.IMPLIED},
+            0x88: {"func":self.DEY, "m": Mode.IMPLIED},
 
+            0X18: {"func":self.CLC, "m": Mode.IMPLIED},
+            0X38: {"func":self.SEC, "m": Mode.IMPLIED},
+            0X58: {"func":self.CLI, "m": Mode.IMPLIED},
+            0X78: {"func":self.SEI, "m": Mode.IMPLIED},
+            0XB8: {"func":self.CLV, "m": Mode.IMPLIED},
+            0XD8: {"func":self.CLD, "m": Mode.IMPLIED},
+            0XF8: {"func":self.SED, "m": Mode.IMPLIED},
+
+            0x4C: {"func":self.JMP, "m": Mode.ABSOLUTE},
+            0x6C: {"func":self.JMP, "m": Mode.INDIRECT},
         }
 
         self.increments = {
@@ -60,19 +77,19 @@ class CPU:
             Mode.ABSOLUTE: 3,
             Mode.IMPLIED: 1,
             Mode.ABSOLUTEX: 3,
-            Mode.ABSOLUTEY: 3
+            Mode.ABSOLUTEY: 3,
+            Mode.INDIRECT: 3
         }
 
     def tick(self):
         #fetching command
         command = self.memory[self.pc]
-        
         #execution
         if command in self.commands:
             f = self.commands[command]["func"]
             m = self.commands[command]["m"]
             f(m)
-            self.pc+= self.increments[m]
+            self.pc += self.increments[m]
         else:
             print(f"Command: {command} not implemented")
 
@@ -105,11 +122,29 @@ class CPU:
             lsb = self.memory[self.pc+1] 
             loc = lsb
 
-        elif mode == Mode.ZEROPAGE:
+        elif mode == Mode.ZEROPAGEX:
             lsb = self.memory[self.pc+1] 
-            loc = lsb
+            loc = lsb + x
 
+        elif mode == Mode.INDIRECT:
+            lsb = self.memory[self.pc+1] 
+            msb = self.memory[self.pc+2]
+            loc = msb * 256 + lsb
+            
+            #Gets JMP address from 2000 memory location.
+            #Challenge: Focused on the JMP from memory location 2000. 
+            lsb = self.memory[loc]
+            msb = self.memory[loc + 1]
+            loc = msb * 256 + lsb
         return loc
+
+    #Wraps the 8 bitvalues
+    def wrap(self, value):
+        if value > 255:
+            value = value % 256;
+        if value < 0:
+            value += 256
+        return value
 
     # Components for loading values to CPU.  A = Accumulator, X = Index Register, Y = Index Register
     def LDA(self, mode):
@@ -156,73 +191,71 @@ class CPU:
     
     def INX(self, mode):
         self.x += 1
-    
+        self.x = self.wrap(self.x)
+
     def INY(self, mode):
         self.y += 1
+        self.y = self.wrap(self.y)
 
     def DEX(self, mode):
         self.x -= 1
+        self.x = self.wrap(self.x)
 
     def DEY(self, mode):
         self.y -= 1
+        self.y = self.wrap(self.y)
 
     def TAX(self, mode):
-        self.a = self.x
-
-    def TXA(self, mode):
         self.x = self.a
 
-    def TAY(self, mode):
-        self.a = self.y
+    def TXA(self, mode):
+        self.a = self.x
 
-    def TYA(self, mode):
+    def TAY(self, mode):
         self.y = self.a
 
+    def TYA(self, mode):
+        self.a = self.y
+
+    #CLC
+    def CLC(self, mode):
+        self.carry = False 
+
+    #SEC
+    def SEC(self, mode):
+        self.carry = True
+
+    #CLI
+    def CLI(self, mode):
+        self.interrupt = False
+
+    #SEI
+    def SEI(self, mode):
+        self.interrupt = True
+
+    #CLV
+    def CLV(self, mode):
+        self.overflow = False
+
+    #CLD
+    def CLD(self, mode):
+        self.decimal = False
+
+    #SED
+    def SED(self, mode):
+        self.decimal = True
+
+    def JMP(self, mode):
+        loc = self.get_location_by_mode(mode)
+        self.pc = loc - self.increments[mode]
+
+    # Testing / Debugging
     def push(self, value):
         self.memory[self.pc] = value
-        self.pc += 1
+        self.pc += 1 
     
     def print_status(self, mode):
-        print(f"A: {self.a}, X: {self.x}, Y: {self.y}, PC: {self.pc}")
-        input() #changes made
-
-#CPU object
-cpu = CPU()
-print(cpu.a)
-
-cpu.pc = 0x1000
-
-cpu.push(0xA9) #LDA #0x0A
-cpu.push(0x0A)
-
-cpu.push(0x42) #DBG
-
-cpu.push(0x8D) #STA 4401 
-cpu.push(0x01)
-cpu.push(0x44)
-
-cpu.push(0x42) #DBG
-
-cpu.push(0xA2)   #LDX #0x01
-cpu.push(0x01)
-
-cpu.push(0xBD)   #LDA 0x4400, X
-cpu.push(0x00)
-cpu.push(0x44)
-
-cpu.push(0x42) #DBG
-
-cpu.push(0xA5) #LDA 
-cpu.push(0x55) 
-
-cpu.push(0x42) #DBG
-
-cpu.pc = 0x1000
-
-for _ in range(100):
-    cpu.tick()
-
-print()
-print(cpu.memory[0x4400])
-print(cpu.memory[0x4401])
-print(cpu.memory[0x4402])
+        print(f"a: {self.a}, x: {self.x}, y: {self.y}, pc: {self.pc}")
+        print(f"carry: {self.carry}, interrupt: {self.interrupt}")
+        print(f"overflow: {self.interrupt}, decimal: {self.decimal}")
+        input() 
