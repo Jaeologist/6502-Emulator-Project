@@ -21,4 +21,14 @@ Progress
 - Added INDIRECT mode
 - Created flags carry, interrupt, overflow, decimal to determine whether it's on or off.
 - Added commands CLC, SEC, CLI, SEI, CLV, CLD, SED, and JMP
-- Created a system file to load, store, and jump data. 
+- Created a system file to load, store, and jump data.
+
+May 21st, 2026
+
+Challenges
+For the past two days I have been trying to get the correct loading and storing sequences in the system. The acculumator wouldn't give the correct value (2 at the time) it would only give me 0. I found out that my my TAX and TXA methods were incorrect. For TAX, I had to swap the line 'self.a = self.x' to 'self.x = self.a' and vise versa for TXA. 
+
+Progress
+- A correct running system program that loads 2 in the acculmulator and has a running JMP command. \
+- wrap method that wraps the 8 bit values.
+- 
