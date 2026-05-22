@@ -28,29 +28,34 @@ class CPU:
         self.interrupt = False;
         self.overflow = False;
         self.decimal = False;
-
+        self.equal = False;
+        self.negative = False;
 
         self.commands = {  
+            #Debugging commands
             0x42: {"func": self.print_status, "m": Mode.IMPLIED},
 
+            #Load A Register commands
             0xA9: {"func": self.LDA, "m": Mode.IMMEDIATE},
             0xA5: {"func": self.LDA, "m": Mode.ZEROPAGE},
             0xB5: {"func": self.LDA, "m": Mode.ZEROPAGEX},
             0xBD: {"func": self.LDA, "m": Mode.ABSOLUTEX},
             0xB9: {"func": self.LDA, "m": Mode.ABSOLUTEY},
 
+            #Load X Y Register commands
             0xA2: {"func": self.LDX, "m": Mode.IMMEDIATE},
             0xA0: {"func": self.LDY, "m": Mode.IMMEDIATE},
 
-            #Absolute Mode
+            #Absolute Commands
             0x8D: {"func": self.STA, "m": Mode.ABSOLUTE},
             0x8E: {"func": self.STX, "m": Mode.ABSOLUTE},
             0x8C: {"func": self.STY, "m": Mode.ABSOLUTE},
 
-            #Implied Mode
+            #Implied Commands
             0xE8: {"func": self.INX, "m": Mode.IMPLIED},
             0XC8: {"func":self.INY, "m": Mode.IMPLIED},
 
+            #Transfer commands
             0XAA: {"func":self.TAX, "m": Mode.IMPLIED},
             0X8A: {"func":self.TXA, "m": Mode.IMPLIED},
             0XA8: {"func":self.TAY, "m": Mode.IMPLIED},
@@ -58,6 +63,7 @@ class CPU:
             0xCA: {"func":self.DEX, "m": Mode.IMPLIED},
             0x88: {"func":self.DEY, "m": Mode.IMPLIED},
 
+            #Flag commands
             0X18: {"func":self.CLC, "m": Mode.IMPLIED},
             0X38: {"func":self.SEC, "m": Mode.IMPLIED},
             0X58: {"func":self.CLI, "m": Mode.IMPLIED},
@@ -66,8 +72,17 @@ class CPU:
             0XD8: {"func":self.CLD, "m": Mode.IMPLIED},
             0XF8: {"func":self.SED, "m": Mode.IMPLIED},
 
+            #Jump commands
             0x4C: {"func":self.JMP, "m": Mode.ABSOLUTE},
             0x6C: {"func":self.JMP, "m": Mode.INDIRECT},
+
+            #Compare commands
+            0xC9: {"func":self.CMP, "m": Mode.IMMEDIATE},
+            0xC5: {"func":self.CMP, "m": Mode.ZEROPAGE},
+            0xD5: {"func":self.CMP, "m": Mode.ZEROPAGEX},
+            0xCD: {"func":self.CMP, "m": Mode.ABSOLUTE},
+            0xDD: {"func":self.CMP, "m": Mode.ABSOLUTEX},
+            0xD9: {"func":self.CMP, "m": Mode.ABSOLUTEY},
         }
 
         self.increments = {
@@ -249,6 +264,22 @@ class CPU:
         loc = self.get_location_by_mode(mode)
         self.pc = loc - self.increments[mode]
 
+    #Added the CMP command to compare the value in the accumulator with the value in the memory.
+    def CMP(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        if value >= self.a:
+            self.carry = True
+
+        if value == self.a:
+            self.equal = True
+        
+        print(f"equal: {self.equal}")
+        if self.a >= 128:
+            self.negative = True
+
+        
     # Testing / Debugging
     def push(self, value):
         self.memory[self.pc] = value
@@ -258,4 +289,5 @@ class CPU:
         print(f"a: {self.a}, x: {self.x}, y: {self.y}, pc: {self.pc}")
         print(f"carry: {self.carry}, interrupt: {self.interrupt}")
         print(f"overflow: {self.interrupt}, decimal: {self.decimal}")
+        print(f"equal: {self.equal}, negative: {self.negative}")
         input() 
