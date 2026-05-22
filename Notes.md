@@ -31,4 +31,11 @@ For the past two days I have been trying to get the correct loading and storing 
 Progress
 - A correct running system program that loads 2 in the acculmulator and has a running JMP command. \
 - wrap method that wraps the 8 bit values.
+
+May 22nd, 2026
+
+Challenges
+
+Progress
+- Tested cases using CMP command where it was equal to, greater than, and less than.
 - 
