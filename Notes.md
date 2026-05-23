@@ -35,7 +35,10 @@ Progress
 May 22nd, 2026
 
 Challenges
-When using git commit -m command in terminal, the termial would keep replying to the files from the git Hub and the local files were diverged. Meaning that I would be able to show changes in my GitHub, continuously showing old code from when the project was first being developed. 
+When using git commit -m command in terminal, the termial would keep replying to the files from the git Hub and the local files were diverged. Meaning that I would be able to show changes in my GitHub, continuously showing old code from when the project was first being developed.
+
 Progress
 - Tested cases using CMP command where it was equal to, greater than, and less than.
-- Merged local file and GitHub to show changes being made from IDE. 
+- Merged local file and GitHub to show changes being made from IDE.
+- Added Compare command.
+- Added carry, interrupt, overflow, decimal, equal, and negative flags for COMP operations.
