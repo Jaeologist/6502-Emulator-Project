@@ -29,7 +29,7 @@ Challenges
 For the past two days I have been trying to get the correct loading and storing sequences in the system. The acculumator wouldn't give the correct value (2 at the time) it would only give me 0. I found out that my my TAX and TXA methods were incorrect. For TAX, I had to swap the line 'self.a = self.x' to 'self.x = self.a' and vise versa for TXA. 
 
 Progress
-- A correct running system program that loads 2 in the acculmulator and has a running JMP command. \
+- A correct running system program that loads 2 in the acculmulator and has a running JMP command.
 - wrap method that wraps the 8 bit values.
 
 May 22nd, 2026
