@@ -55,3 +55,15 @@ cpu.push(0x42) #DBG
 cpu.push(0x6C) #JMP 0x2000 (loop)
 cpu.push(0x00)
 cpu.push(0x20) 
+
+#Test Compare
+cpu.pc = 0x1000
+
+cpu.push(0xA9) #Loading accumuluator with 0x01
+cpu.push(0x90)
+
+cpu.push(0xC9) #Comparing accumulator with 0x02
+cpu.push(0x01)
+
+cpu.push(0x42) #Debugging
+
