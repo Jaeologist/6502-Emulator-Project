@@ -11,6 +11,7 @@ class Mode(Enum):
     ABSOLUTEY = auto()
     IMPLIED = auto()
     INDIRECT = auto()
+    RELATIVE = auto()
 
 class CPU:
     def __init__(self):
@@ -297,9 +298,16 @@ class CPU:
         loc = self.get_location_by_mode(mode)
         value = self.memory[loc]
 
-        #Jump to the offset()
+        #Jump to the offset
+        if self.n == True:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
 
-        
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+
     # Testing / Debugging
     def push(self, value):
         self.memory[self.pc] = value
