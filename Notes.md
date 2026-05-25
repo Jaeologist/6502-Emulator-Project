@@ -57,6 +57,7 @@ Progress
 May 24th, 2026
 
 Challenges
+When running the code in the beginning, my termial was not picking up the BMI attribute BMI command on line 90. After finding out why my branch code wasn't running I decided to push my changes. The file wasn't taking in any commits unless I used git pull command before. After doing that my code change to the older version of the code from May 22nd. 
 
 Progress
 - 
