@@ -8,10 +8,22 @@ print(cpu.a)
 cpu.pc = 0x1000
 
 cpu.push(0xA9) #Loading accumuluator with 0x01
-cpu.push(0x90)
+cpu.push(0x90) #It's negative so it will set the N flag
 
 cpu.push(0xC9) #Comparing accumulator with 0x02
 cpu.push(0x01)
+
+cpu.push(0x30)
+cpu.push(0x03) #BMI LDX #0xFF
+
+# Loading a negative value into X register to test branching instructions. 
+cpu.push(0xA2) #LDX #0x01
+cpu.push(0x01)
+
+cpu.push(0x42) #DBG
+
+cpu.push(0xA2) #LDX #0xFF
+cpu.push(0xFF)
 
 cpu.push(0x42) #Debugging
 
