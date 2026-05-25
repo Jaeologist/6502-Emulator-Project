@@ -23,19 +23,19 @@ class CPU:
         self.y = 0x00
         self.pc = 0x1000
 
-        
-        self.carry = False;
-        self.interrupt = False;
-        self.overflow = False;
-        self.decimal = False;
-        self.equal = False;
-        self.negative = False;
+        self.n = False #Negative flag
+        self.v = False #Overflow flag
+        self.b = False #Break flag
+        self.d = False #Decimal flag
+        self.i = False #Interrupt flag
+        self.z = False #Zero flag
+        self.c = False #Carry flag
 
         self.commands = {  
             #Debugging commands
             0x42: {"func": self.print_status, "m": Mode.IMPLIED},
 
-            #Load A Register commands
+            #Loading Commands
             0xA9: {"func": self.LDA, "m": Mode.IMMEDIATE},
             0xA5: {"func": self.LDA, "m": Mode.ZEROPAGE},
             0xB5: {"func": self.LDA, "m": Mode.ZEROPAGEX},
@@ -83,7 +83,11 @@ class CPU:
             0xCD: {"func":self.CMP, "m": Mode.ABSOLUTE},
             0xDD: {"func":self.CMP, "m": Mode.ABSOLUTEX},
             0xD9: {"func":self.CMP, "m": Mode.ABSOLUTEY},
+
+            #Branch commands
+            0x30: {"func":self.BMI, "m": Mode.RELATIVE},
         }
+
 
         self.increments = {
             Mode.IMMEDIATE: 2,
@@ -93,9 +97,11 @@ class CPU:
             Mode.IMPLIED: 1,
             Mode.ABSOLUTEX: 3,
             Mode.ABSOLUTEY: 3,
-            Mode.INDIRECT: 3
+            Mode.INDIRECT: 3,
+            Mode.RELATIVE: 2
         }
 
+    # Fetching and executing commands
     def tick(self):
         #fetching command
         command = self.memory[self.pc]
@@ -108,8 +114,6 @@ class CPU:
         else:
             print(f"Command: {command} not implemented")
 
-    #This will shortern our code by creating a method that gets the location based of the location.
-    #While finding whether the mode is immediate of absolute. 
     def get_location_by_mode(self, mode):
         loc = 0
 
@@ -146,14 +150,15 @@ class CPU:
             msb = self.memory[self.pc+2]
             loc = msb * 256 + lsb
             
-            #Gets JMP address from 2000 memory location.
-            #Challenge: Focused on the JMP from memory location 2000. 
             lsb = self.memory[loc]
             msb = self.memory[loc + 1]
             loc = msb * 256 + lsb
+        elif mode == Mode.RELATIVE:
+            loc = self.pc + 1
+
         return loc
 
-    #Wraps the 8 bitvalues
+    # Wrapping the 8 bit values
     def wrap(self, value):
         if value > 255:
             value = value % 256;
@@ -161,7 +166,7 @@ class CPU:
             value += 256
         return value
 
-    # Components for loading values to CPU.  A = Accumulator, X = Index Register, Y = Index Register
+    # Loading Accumulator
     def LDA(self, mode):
         loc = self.get_location_by_mode(mode)
         #Loading value from memory
@@ -169,7 +174,7 @@ class CPU:
         #Putting the value in the accumulator
         self.a = val 
 
-    #LDX
+    # Loading X Register
     def LDX(self, mode):
         loc = self.get_location_by_mode(mode)
         #Loading value from memory
@@ -177,7 +182,7 @@ class CPU:
         #Putting the value in the accumulator
         self.x = val 
 
-    #LDY
+    # Loading Y Register
     def LDY(self, mode):
         loc = self.get_location_by_mode(mode)
         #Loading value from memory
@@ -185,99 +190,114 @@ class CPU:
         #Putting the value in the accumulator
         self.y = val 
     
-    #Storing values to CPU.  A = Accumulator, X = Index Register, Y = Index Register
+    # Storing Accumulator
     def STA(self, mode):
         # Find the location based on the mode
         loc = self.get_location_by_mode(mode)
         #Update memory
         self.memory[loc] = self.a
         
-
+    # Storing X Register
     def STX(self, mode):
         loc = self.get_location_by_mode(mode)
         #Update memory
         self.memory[loc] = self.x
         
-
+    # Storing Y Register
     def STY(self, mode):
         loc = self.get_location_by_mode(mode)
         #Update memory
         self.memory[loc] = self.y
     
+    # Incrementing X Register
     def INX(self, mode):
         self.x += 1
         self.x = self.wrap(self.x)
 
+    # Incrementing Y Register
     def INY(self, mode):
         self.y += 1
         self.y = self.wrap(self.y)
 
+    # Decrementing X Register
     def DEX(self, mode):
         self.x -= 1
         self.x = self.wrap(self.x)
 
+    # Decrementing Y Register
     def DEY(self, mode):
         self.y -= 1
         self.y = self.wrap(self.y)
 
+    # Transferring Accumulator to X Register
     def TAX(self, mode):
         self.x = self.a
 
+    # Transferring X Register to Accumulator
     def TXA(self, mode):
         self.a = self.x
 
+    # Transferring Accumulator to Y Register
     def TAY(self, mode):
         self.y = self.a
 
+    # Transferring Y Register to Accumulator
     def TYA(self, mode):
         self.a = self.y
 
-    #CLC
+    # Clearing Carry Flag
     def CLC(self, mode):
-        self.carry = False 
+        self.c = False 
 
-    #SEC
+    # Setting Carry Flag
     def SEC(self, mode):
-        self.carry = True
+        self.c = True
 
-    #CLI
+    # Clearing Interrupt Flag
     def CLI(self, mode):
-        self.interrupt = False
+        self.i = False
 
-    #SEI
+    # Setting Interrupt Flag
     def SEI(self, mode):
-        self.interrupt = True
+        self.i = True
 
-    #CLV
+    # Clearing Overflow Flag
     def CLV(self, mode):
-        self.overflow = False
+        self.v = False
 
-    #CLD
+    # Clearing Decimal Flag
     def CLD(self, mode):
-        self.decimal = False
+        self.d = False
 
-    #SED
+    # Setting Decimal Flag
     def SED(self, mode):
-        self.decimal = True
+        self.d = True
 
+    # Jumping to a new location
     def JMP(self, mode):
         loc = self.get_location_by_mode(mode)
         self.pc = loc - self.increments[mode]
 
-    #Added the CMP command to compare the value in the accumulator with the value in the memory.
+    # Comparing Accumulator with Memory
     def CMP(self, mode):
         loc = self.get_location_by_mode(mode)
         value = self.memory[loc]
 
         if value >= self.a:
-            self.carry = True
+            self.c = True
 
         if value == self.a:
-            self.equal = True
+            self.z = True
         
-        print(f"equal: {self.equal}")
+        
         if self.a >= 128:
-            self.negative = True
+            self.n = True
+    #Branch
+    def BMI(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset()
 
         
     # Testing / Debugging
@@ -285,9 +305,9 @@ class CPU:
         self.memory[self.pc] = value
         self.pc += 1 
     
+    #Printing the status of the CPU. 
     def print_status(self, mode):
-        print(f"a: {self.a}, x: {self.x}, y: {self.y}, pc: {self.pc}")
-        print(f"carry: {self.carry}, interrupt: {self.interrupt}")
-        print(f"overflow: {self.interrupt}, decimal: {self.decimal}")
-        print(f"equal: {self.equal}, negative: {self.negative}")
+        print(f"acc: {self.a}, xreg: {self.x}, yreg: {self.y}, pc: {self.pc}")
+        print(f"n v b d i z c ")
+        print(f"{int(self.n)} {int(self.v)} {int(self.b)} {int(self.d)} {int(self.i)} {int(self.z)} {int(self.c)}")
         input() 
