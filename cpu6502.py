@@ -1,5 +1,6 @@
 from enum import Enum, auto
 from pickle import FALSE
+from re import A
 
 #Gives numerical values
 class Mode(Enum):
@@ -23,6 +24,8 @@ class CPU:
         self.x = 0x00
         self.y = 0x00
         self.pc = 0x1000
+        #What I added 
+        self.sp = 0xFF
 
         self.n = False #Negative flag
         self.v = False #Overflow flag
@@ -45,6 +48,7 @@ class CPU:
 
             #Load X Y Register commands
             0xA2: {"func": self.LDX, "m": Mode.IMMEDIATE},
+            0xAE: {"func": self.LDX, "m": Mode.ABSOLUTE},
             0xA0: {"func": self.LDY, "m": Mode.IMMEDIATE},
 
             #Absolute Commands
@@ -94,6 +98,14 @@ class CPU:
             0xB0: {"func":self.BCS, "m": Mode.RELATIVE},
             0xD0: {"func":self.BNE, "m": Mode.RELATIVE},
             0xF0: {"func":self.BEQ, "m": Mode.RELATIVE},
+
+            #Stack command
+            0x9A: {"func":self.TXS, "m": Mode.IMPLIED},
+            0xBA: {"func":self.TSX, "m": Mode.IMPLIED},
+            0x48: {"func":self.PHA, "m": Mode.IMPLIED},
+            0x68: {"func":self.PLA, "m": Mode.IMPLIED},
+            0x08: {"func":self.PHP, "m": Mode.IMPLIED},
+            0x28: {"func":self.PLP, "m": Mode.IMPLIED},
         }
 
 
@@ -412,7 +424,42 @@ class CPU:
 
             self.pc = self.pc + value
 
-            print(f"Negative: {value}")  
+            print(f"Negative: {value}")
+
+        #TXS
+    def TXS(self, mode):
+        self.sp = self.x
+
+        #TSX
+    def TSX(self, mode):
+        self.x = self.sp
+
+    #PHA
+    def PHA(self, mode):
+        #Find the location
+        loc = 0x100 + self.sp #self.sp is the stack pointer
+
+        #Copy from the accumulator 
+        self.memory[loc] = self.a
+
+        # Decrement the stack pointer
+        self.sp -= 1
+
+        self.sp = wrap(self.sp)
+
+    #PLA
+    def PLA(self, mode):
+        pass
+
+    #PHP
+    def PHP(self, mode):
+        pass
+
+    #PLP
+    def PLP(self, mode):
+        pass
+
+
     # Testing / Debugging
     def push(self, value):
         self.memory[self.pc] = value
@@ -421,6 +468,7 @@ class CPU:
     #Printing the status of the CPU. 
     def print_status(self, mode):
         print(f"acc: {self.a}, xreg: {self.x}, yreg: {self.y}, pc: {self.pc}")
+        print(f"pc: {self.pc}, sp: {self.sp}")
         print(f"n v b d i z c ")
         print(f"{int(self.n)} {int(self.v)} {int(self.b)} {int(self.d)} {int(self.i)} {int(self.z)} {int(self.c)}")
         input() 
