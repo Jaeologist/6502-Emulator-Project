@@ -86,7 +86,14 @@ class CPU:
             0xD9: {"func":self.CMP, "m": Mode.ABSOLUTEY},
 
             #Branch commands
+            0x10: {"func":self.BPL, "m": Mode.RELATIVE},
             0x30: {"func":self.BMI, "m": Mode.RELATIVE},
+            0x50: {"func":self.BVC, "m": Mode.RELATIVE},
+            0x70: {"func":self.BVS, "m": Mode.RELATIVE},
+            0x90: {"func":self.BCC, "m": Mode.RELATIVE},
+            0xB0: {"func":self.BCS, "m": Mode.RELATIVE},
+            0xD0: {"func":self.BNE, "m": Mode.RELATIVE},
+            0xF0: {"func":self.BEQ, "m": Mode.RELATIVE},
         }
 
 
@@ -293,7 +300,7 @@ class CPU:
         
         if self.a >= 128:
             self.n = True
-    #Branch
+    #BMI
     def BMI(self, mode):
         loc = self.get_location_by_mode(mode)
         value = self.memory[loc]
@@ -308,6 +315,104 @@ class CPU:
 
             print(f"Negative: {value}")
 
+    # BPL
+    def BPL(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.n == False:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+    # BVC
+    def BVC(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.v == True:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+    # BVS
+    def BVS(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.v == False:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+    # BCC
+    def BCC(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.c == False:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+    # BCS
+    def BCS(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.c == True:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+    # BNE
+    def BNE(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.z == False:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+    # BEQ
+    def BEQ(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.z == True:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")  
     # Testing / Debugging
     def push(self, value):
         self.memory[self.pc] = value
