@@ -120,8 +120,8 @@ class CPU:
             f(m)
             self.pc += self.increments[m]
         else:
-            print(f"Command: {command} not implemented")
-
+            print(f"Command: {command} not implemented at location {hex(self.pc)}")
+            input()
     def get_location_by_mode(self, mode):
         loc = 0
 
