@@ -67,8 +67,8 @@ cpu.push(0x01)
 
 cpu.push(0x42) #Debugging
 
-#Testing BMI
-# Positive
+
+# Positive BMI
 cpu.push(0xA9) #LDA 0x90
 cpu.push(0x90)
 
@@ -90,7 +90,7 @@ cpu.push(0xFF)
 
 cpu.push(0x42) #DBG
 
-# Negative
+#Negative BMI
 
 cpu.push(0xA2) #LDX #0xFF
 cpu.push(0xFF)
@@ -136,3 +136,48 @@ cpu.push(0xA2) #LDX #0x01
 cpu.push(0x01)
 
 cpu.push(0x42) #DBG
+
+# PHA 
+cpu.push(0xA9) # LDA 0x0A
+cpu.push(0x0A)
+
+cpu.push(0x48) # PHA
+
+cpu.push(0x42) # DBG
+
+cpu.push(0xAE) # LDX 0x1FF
+cpu.push(0xFF)
+cpu.push(0x01)
+
+cpu.push(0x42) # DBG
+
+cpu.push(0xA9) # LDA 0x00
+cpu.push(0x00)
+
+cpu.push(0x42) # DBG
+
+cpu.push(0x68) # PLA
+
+cpu.push(0x42) # DBG
+
+# DEQ
+cpu.push(0xA2) # LDX #0xFF
+cpu.push(0xFF)
+
+cpu.push(0x42) # DBG
+
+cpu.push(0xA9) # LDA #0x90
+cpu.push(0x90)
+
+cpu.push(0xC9) # CMP #0x01
+cpu.push(0x01)
+
+cpu.push(0x42) # DBG
+
+cpu.push(0xF0) # BEQ LDX #0x01
+cpu.push(0xF6)
+
+cpu.push(0xA2) # LDX #0x01
+cpu.push(0x01)
+
+cpu.push(0x42) # DBG

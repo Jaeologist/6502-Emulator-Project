@@ -133,6 +133,7 @@ class CPU:
         else:
             print(f"Command: {command} not implemented at location {hex(self.pc)}")
             input()
+            
     def get_location_by_mode(self, mode):
         loc = 0
 
@@ -425,15 +426,15 @@ class CPU:
 
             print(f"Negative: {value}")
 
-        #TXS
+        #Transfer X Register to Stack Pointer
     def TXS(self, mode):
         self.sp = self.x
 
-        #TSX
+        #Transfer Stack Pointer to X Register
     def TSX(self, mode):
         self.x = self.sp
 
-    #PHA
+    #Push accumulator
     def PHA(self, mode):
         #Find the location
         loc = 0x100 + self.sp #self.sp is the stack pointer
@@ -442,18 +443,51 @@ class CPU:
         self.memory[loc] = self.a
 
         # Decrement the stack pointer
-        self.sp -= 1
+        self.sp -= 1 
 
-        self.sp = wrap(self.sp)
+        self.sp = self.wrap(self.sp)
 
-    #PLA
+    #Pull Accumulator
     def PLA(self, mode):
-        pass
+        #Increments the stack pointer 
+        self.sp += 1 
+
+        #wrap
+        self.sp = self.wrap(self.sp)
+
+        # Finds location 
+        loc = 0x100 + self.sp
+
+        #Copies value to accumulator
+        self.a = self.memory[loc]
 
     #PHP
     def PHP(self, mode):
-        pass
 
+        val = 0
+        if self.n == True:
+            val += 128
+        if self.v == True:
+            val += 64
+        if self.b == True:
+            self += 32
+        val += 16
+        if self.d == True:
+            val += 8
+        if self.i == True:
+            val += 4
+        if self.z == True:
+            val += 2
+        if self.c == True:
+            val += 1
+
+        #Copy from the accumulator 
+        self.memory[loc] = val
+
+        # Decrement the stack pointer
+        self.sp -= 1 
+
+        self.sp = self.wrap(self.sp)
     #PLP
     def PLP(self, mode):
         pass
@@ -467,7 +501,7 @@ class CPU:
     #Printing the status of the CPU. 
     def print_status(self, mode):
         print(f"acc: {self.a}, xreg: {self.x}, yreg: {self.y}, pc: {self.pc}")
-        print(f"pc: {self.pc}, sp: {self.sp}")
+        print(f"sp: {self.sp}")
         print(f"n v b d i z c ")
         print(f"{int(self.n)} {int(self.v)} {int(self.b)} {int(self.d)} {int(self.i)} {int(self.z)} {int(self.c)}")
         input() 
