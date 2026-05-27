@@ -24,7 +24,6 @@ class CPU:
         self.x = 0x00
         self.y = 0x00
         self.pc = 0x1000
-        #What I added 
         self.sp = 0xFF
 
         self.n = False #Negative flag
