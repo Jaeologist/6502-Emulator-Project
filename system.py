@@ -17,6 +17,15 @@ cpu.push(0x42) # DBG
 
 cpu.push(0x08) # PHP
 
+cpu.push(0xA9) # LDA 0x00
+cpu.push(0x00)
+
+cpu.push(0x42) # DBG
+
+cpu.push(0x68) # PLA
+
+cpu.push(0x42) # DBG
+
 cpu.pc = 0x1000
 
 for _ in range(30):

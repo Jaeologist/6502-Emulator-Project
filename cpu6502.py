@@ -133,7 +133,7 @@ class CPU:
         else:
             print(f"Command: {command} not implemented at location {hex(self.pc)}")
             input()
-            
+
     def get_location_by_mode(self, mode):
         loc = 0
 
@@ -481,16 +481,35 @@ class CPU:
         if self.c == True:
             val += 1
 
-        #Copy from the accumulator 
+         # Finds location 
+        loc = 0x100 + self.sp
+
+        # Copy from the accumulator 
         self.memory[loc] = val
 
         # Decrement the stack pointer
         self.sp -= 1 
 
         self.sp = self.wrap(self.sp)
+
     #PLP
     def PLP(self, mode):
-        pass
+        #Increments the stack pointer 
+        self.sp += 1 
+
+        #wrap
+        self.sp = self.wrap(self.sp)
+
+        # Finds location 
+        loc = 0x100 + self.sp
+
+        # Finds value
+        val = self.memory[loc]
+
+        # Decode value and update flag
+
+        # Copies value to accumulator
+        self.a = self.memory[loc]
 
 
     # Testing / Debugging
