@@ -22,7 +22,12 @@ cpu.push(0x00)
 
 cpu.push(0x42) # DBG
 
-cpu.push(0x68) # PLA
+cpu.push(0xC9) # CMP 0x00
+cpu.push(0x00)
+
+cpu.push(0x42) # DBG
+
+cpu.push(0x28) # PLP
 
 cpu.push(0x42) # DBG
 

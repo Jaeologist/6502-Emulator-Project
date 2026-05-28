@@ -309,9 +309,9 @@ class CPU:
         if value == self.a:
             self.z = True
         
-        
         if self.a >= 128:
             self.n = True
+            
     #BMI
     def BMI(self, mode):
         loc = self.get_location_by_mode(mode)
@@ -470,7 +470,7 @@ class CPU:
         if self.v == True:
             val += 64
         if self.b == True:
-            self += 32
+            val += 32
         val += 16
         if self.d == True:
             val += 8
@@ -480,6 +480,8 @@ class CPU:
             val += 2
         if self.c == True:
             val += 1
+
+        print(f"PHP val: {val}")
 
          # Finds location 
         loc = 0x100 + self.sp
@@ -506,8 +508,45 @@ class CPU:
         # Finds value
         val = self.memory[loc]
 
-        # Decode value and update flag
+        print(f"PLP val: {val}")
 
+        # Decode value and update flag
+        if val & 128 == 128:  #& is logical and
+            self.n = True
+        else:
+            self.n = False
+
+        if val & 64 == 64:
+            self.v = True
+        else:
+            self.v = False
+
+        if val & 32 == 32:
+            self.b = True
+        else:
+            self.b = False
+
+        if val & 8 == 8:
+            self.d = True
+        else:
+            self.d = False
+
+        if val & 4 == 4:
+            self.i = True
+        else:
+            self.i = False
+
+        if val & 2 == 2:
+            self.z = True
+        else:
+            self.z = False
+
+        if val & 1 == 1:
+            self.c = True
+        else:
+            self.c = False
+
+        
         # Copies value to accumulator
         self.a = self.memory[loc]
 
