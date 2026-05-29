@@ -54,7 +54,7 @@ cpu.push(0xCA) #DEX LOC 0x100D
 cpu.push(0x42) #DBG
 cpu.push(0x6C) #JMP 0x2000 (loop)
 cpu.push(0x00)
-cpu.push(0x20) 
+cpu.push(0x20)
 
 #Test Compare
 cpu.pc = 0x1000
@@ -181,3 +181,49 @@ cpu.push(0xA2) # LDX #0x01
 cpu.push(0x01)
 
 cpu.push(0x42) # DBG
+
+#PHP and PLP Testing
+
+cpu.push(0xA9) # LDA 0x90
+cpu.push(0x90)
+
+cpu.push(0xC9) # CMP 0x01
+cpu.push(0x01)
+
+cpu.push(0x42) # DBG
+
+cpu.push(0x08) # PHP
+
+cpu.push(0xA9) # LDA 0x00
+cpu.push(0x00)
+
+cpu.push(0xC9) # CMP 0x00
+cpu.push(0x00)
+
+cpu.push(0x42)
+
+cpu.push(0x28) # PLP
+
+cpu.push(0x42) # DBG
+
+#JSR / RTS test            Sequence of Events
+
+cpu.push(0x20) #JSR        Jumps to different 1008 memory loction        
+cpu.push(0x08) #           loads 1 into x register
+cpu.push(0x10) #           Returns from sub routine to jump back to 1004
+#                          Debugs
+cpu.push(0x42) #DBG        Loads 2 to Y
+#                          Debugs
+cpu.push(0xA0) #LDY #$02   
+cpu.push(0x02) #
+
+cpu.push(0x42) #DBG
+
+cpu.push(0) #Halt on error
+
+cpu.push(0xA2) #LDX #$01
+cpu.push(0x01) #
+
+cpu.push(0x42)
+
+cpu.push(0x60) #RTS

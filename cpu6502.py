@@ -20,11 +20,11 @@ class CPU:
         for _ in range(0, 65536):
             self.memory.append(0)
 
-        self.a = 0x00
-        self.x = 0x00
-        self.y = 0x00
-        self.pc = 0x1000
-        self.sp = 0xFF
+        self.a = 0x00 #accumulator
+        self.x = 0x00  #x register
+        self.y = 0x00 #y register
+        self.pc = 0x1000 #program counter
+        self.sp = 0xFF #stack 
 
         self.n = False #Negative flag
         self.v = False #Overflow flag
@@ -105,6 +105,10 @@ class CPU:
             0x68: {"func":self.PLA, "m": Mode.IMPLIED},
             0x08: {"func":self.PHP, "m": Mode.IMPLIED},
             0x28: {"func":self.PLP, "m": Mode.IMPLIED},
+
+            #Jump stack command 
+            0x20: {"func":self.JSR, "m": Mode.ABSOLUTE},
+            0x60: {"func":self.RTS, "m": Mode.IMPLIED},
         }
 
 
@@ -463,7 +467,6 @@ class CPU:
 
     #PHP
     def PHP(self, mode):
-
         val = 0
         if self.n == True:
             val += 128
@@ -483,7 +486,7 @@ class CPU:
 
         print(f"PHP val: {val}")
 
-         # Finds location 
+        # Finds location 
         loc = 0x100 + self.sp
 
         # Copy from the accumulator 
@@ -546,10 +549,54 @@ class CPU:
         else:
             self.c = False
 
-        
-        # Copies value to accumulator
-        self.a = self.memory[loc]
+    #JSR
+    def JSR(self,mode):
+        #Return location (-1)
+        loc = self.pc + 2
 
+        msb = loc % 256
+        lsb = loc - (msb * 256)
+
+        # Copy from the accumulator 
+        temp_a = self.a
+
+        #Push onto stack
+        self.a = msb
+        self.PHA(mode)
+
+        self.a = lsb
+        self.PHA(mode)
+
+        #Copy temp onto a
+        self.a = temp_a
+
+        #Change program counter to new location
+        loc = self.get_location_by_mode(mode)
+
+        #Set program counter to location
+        self.pc = loc - self.increments[mode]
+
+
+    def RTS(self, mode):
+        #Copy a value to temp
+        temp_a = self.a
+
+        #Pull lsb
+        self.PLA(mode)
+        lsb = self.a
+
+        #Pull msb
+        self.PLA(mode)
+        msb = self.a
+
+        #Restore temp to a
+        self.a = temp_ a
+
+        #Set PC to return address
+        self.pc = msb * 256 + lsb
+
+
+    
 
     # Testing / Debugging
     def push(self, value):
