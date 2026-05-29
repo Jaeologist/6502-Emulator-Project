@@ -64,3 +64,12 @@ Progress
 - Added Branch commands
 - Test Branch commands in system
 - Restored code
+
+May 29th, 2026
+
+Challenges 
+When testing my system code, it would crash at first because I would forget to use temp.a instead of temp_a variable. Then it would give me a a different program counter then crash. Turns out I had to a the debug after loading x and before it would run RTS command. 
+
+Progress
+-Added RTS command 
+-Added 
