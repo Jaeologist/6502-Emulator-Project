@@ -109,6 +109,10 @@ class CPU:
             #Jump stack command 
             0x20: {"func":self.JSR, "m": Mode.ABSOLUTE},
             0x60: {"func":self.RTS, "m": Mode.IMPLIED},
+
+            0x69: {"func":self.ADC, "m": Mode.IMMEDIATE},
+
+
         }
 
 
@@ -590,13 +594,29 @@ class CPU:
         msb = self.a
 
         #Restore temp to a
-        self.a = temp_ a
+        self.a = temp_a
 
         #Set PC to return address
         self.pc = msb * 256 + lsb
 
+    def ADC(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
 
-    
+        #add value to accumulator
+        self.a += value
+
+        #if carry flag is set
+        if self.c == True:
+            self.a += 1
+        
+        #carry and war around
+        if self.a > 255:
+            self.c = True
+            self.a = self.wrap(self.a)
+
+
+
 
     # Testing / Debugging
     def push(self, value):
@@ -605,8 +625,12 @@ class CPU:
     
     #Printing the status of the CPU. 
     def print_status(self, mode):
-        print(f"acc: {self.a}, xreg: {self.x}, yreg: {self.y}, pc: {self.pc}")
-        print(f"sp: {self.sp}")
+        print(f"Accumulator: {self.a}")
+        print(f"X Register: {self.x}")
+        print(f"Y Register: {self.y}")
+        print(f"Program Counter: {self.pc} ")
+        print(f"Stack Pointer: {self.sp}")
+        print()
         print(f"n v b d i z c ")
         print(f"{int(self.n)} {int(self.v)} {int(self.b)} {int(self.d)} {int(self.i)} {int(self.z)} {int(self.c)}")
         input() 

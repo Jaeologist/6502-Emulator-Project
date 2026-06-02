@@ -227,3 +227,19 @@ cpu.push(0x01) #
 cpu.push(0x42)
 
 cpu.push(0x60) #RTS
+
+#ADC Testing
+ #Adding 240
+
+cpu.push(0xA9) # LDA 0xFF
+cpu.push(0xF0)
+
+cpu.push(0x42)
+#cpu.push(0x38) # SEC
+
+cpu.push(0x69) #ADC 0x01 (adds one to accumulator)
+cpu.push(0x01)
+
+cpu.push(0x42) #DBG
+
+ #Adding 255

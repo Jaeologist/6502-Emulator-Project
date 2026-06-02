@@ -7,25 +7,19 @@ print(cpu.a)
 
 cpu.pc = 0x1000
 
-cpu.push(0x20) #JSR                
-cpu.push(0x08)            
-cpu.push(0x10)         
-                          
-cpu.push(0x42) #DBG        
-                          
-cpu.push(0xA0) #LDY #$02   
-cpu.push(0x02) 
+cpu.push(0xA9) # LDA 0xFF
+cpu.push(0xFF)
 
 cpu.push(0x42) #DBG
 
-cpu.push(0) #Halt on error
+cpu.push(0x38) # SEC
 
-cpu.push(0xA2) #LDX #$01
-cpu.push(0x01) 
+cpu.push(0x42) #DBG
 
-cpu.push(0x42)
+cpu.push(0x69) #ADC 0x01 (adds one to accumulator)
+cpu.push(0x01)
 
-cpu.push(0x60) #RTS
+cpu.push(0x42) #DBG
 
 cpu.pc = 0x1000
 
