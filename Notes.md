@@ -46,7 +46,7 @@ Progress
 May 23rd, 2026
 
 Challenges
-Didn't run across any challenges. 
+  Didn't run across any challenges. 
 
 Progress
 - Changed the flag names to the abbrievations of each flag from the documentation.
@@ -57,19 +57,30 @@ Progress
 May 24th, 2026
 
 Challenges
-When running the code in the beginning, my termial was not picking up the BMI attribute BMI command on line 90. After finding out why my branch code wasn't running I decided to push my changes. The file wasn't taking in any commits unless I used git pull command before. After doing that my code change to the older version of the code from May 22nd. 
+  When running the code in the beginning, my termial was not picking up the BMI attribute BMI command on line 90. After finding out why my branch code wasn't running I decided to push my changes. The file wasn't taking in any commits unless I used git pull command before. After doing that my code change to the older version of the code from May 22nd. 
 
 Progress
 - found the GitHub command sequence to show my immediate changes.
 - Added Branch commands
 - Test Branch commands in system
 - Restored code
+  
+May 27th, 2026
+
+Challenges
+  When trying to start my IDE, it ended up crashing. I had to reinstall Cursor and update it to the most current version. When loaded the Emulator file, the code when back to an older version where I was testing the DEQ.
+
+Progress
+- Created PLP
+- Tested PHP
+- Created PHA, PLA, PHP functionality. 
 
 May 29th, 2026
 
 Challenges 
-When testing my system code, it would crash at first because I would forget to use temp.a instead of temp_a variable. Then it would give me a a different program counter then crash. Turns out I had to a the debug after loading x and before it would run RTS command. 
+  When testing my system code, it would crash at first because I would forget to use temp.a instead of temp_a variable. Then it would give me a a different program counter then crash. Turns out I had to a the debug after loading x and before it would run RTS command. 
 
 Progress
 -Added RTS command 
--Added 
+-Added JSR command
+
