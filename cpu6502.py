@@ -64,6 +64,7 @@ class CPU:
             0X8A: {"func":self.TXA, "m": Mode.IMPLIED},
             0XA8: {"func":self.TAY, "m": Mode.IMPLIED},
             0X98: {"func":self.TYA, "m": Mode.IMPLIED},
+
             0xCA: {"func":self.DEX, "m": Mode.IMPLIED},
             0x88: {"func":self.DEY, "m": Mode.IMPLIED},
 
@@ -114,8 +115,14 @@ class CPU:
             0x69: {"func":self.ADC, "m": Mode.IMMEDIATE},
             0x29: {"func":self.AND, "m": Mode.IMMEDIATE},
             0x49: {"func":self.EOR, "m": Mode.IMMEDIATE},
-            0x09: {"func":self.ORA, "m": Mode.IMMEDIATE}
+            0x09: {"func":self.ORA, "m": Mode.IMMEDIATE},
 
+            #Subtract Command 
+            0xE9: {"func":self.SBC, "m": Mode.IMMEDIATE},
+
+            #No Opt. Command 
+            0xEA: {"func":self.NOP, "m": Mode.IMPLIED}
+        
         }
 
 
@@ -640,6 +647,28 @@ class CPU:
 
         #Perform logical AND
         self.a = self.a ^ value
+
+    def SBC(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Subtract value to accumulator
+        self.a -= value
+
+        # Check carry flag 
+        if self.c == False:
+            self.a -= 1
+
+        if self.a < 0:
+            self.a = self.wrap(self.a)
+
+            if self.c == True:
+                self.c = False
+            else:
+                self.c = True
+
+    def NOP(self, mode):
+        pass
 
     # Testing / Debugging
     def push(self, value):
