@@ -20,6 +20,6 @@
 - And/Or instructions ADC, AND, EOR, ORA
 - System simulator 
 
-**Currently working on **
+**Currently Working On**
 - Subtracting with Carry
 - No Operations
