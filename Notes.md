@@ -83,3 +83,13 @@ Challenges
 Progress
 - Created RTS command
 - Created JSR command
+
+June 2nd, 2026
+
+Challenges 
+When testing for the ORA operator in the system file, i kept running across an error that the accumulator would load 1 then in the next registers it would load 0. When looking over my ORA method instead of the vertical bar I used the logical and module. This caused it to operate as a AND operator rather than the OR operation intended. After the change, it loaded 5 in the next register as intended. 
+
+Progress 
+- Added Add with Carry(ADC) along with
+- Added bitwise operators AND, ORA, EOR.
+- Tested ADC with adding values 240 to 241 and 255 to 0.
