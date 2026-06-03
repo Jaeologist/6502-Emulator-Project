@@ -4,14 +4,15 @@
 
 **Current Features**
 - 64KB memory simulation
-- Acummulator, X, and Y registers
+- Regiesters Acummulator, X register, Y registers
 - Program counter
 - Stack pointer
 - System simulator 
-- Immediate, Zeropage, ZeropageX, Absolute, AbsoluteX, AbsoluteY, Implied, Indirect, and Relative addressing modes.
+- Addressing modes Immediate, Zeropage, ZeropageX, Absolute, AbsoluteX, AbsoluteY, Implied, Indirect, Relative, Accumulator
+- Flags negative, carry, zero, decimal, break, interupt, overflow
 - Loading instructions LDA, LDX, LDY
 - Storing instructions STA, STX, STY
-- Increment and Decrement instructions INX, INY, DEX, DEY
+- Increment/Decrement instructions INX, INY, DEX, DEY
 - Transfer instructions TAX, TXA, TAY, TYA, TXS, TSX
 - Flag instructions CLC, SEC, CLI, SEI, CLV, CLD, SED
 - Jump instructions JMP, JSR
