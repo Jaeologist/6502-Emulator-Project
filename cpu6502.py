@@ -110,8 +110,11 @@ class CPU:
             0x20: {"func":self.JSR, "m": Mode.ABSOLUTE},
             0x60: {"func":self.RTS, "m": Mode.IMPLIED},
 
+            #AND/OR Command
             0x69: {"func":self.ADC, "m": Mode.IMMEDIATE},
-
+            0x29: {"func":self.AND, "m": Mode.IMMEDIATE},
+            0x49: {"func":self.EOR, "m": Mode.IMMEDIATE},
+            0x09: {"func":self.ORA, "m": Mode.IMMEDIATE}
 
         }
 
@@ -614,9 +617,29 @@ class CPU:
         if self.a > 255:
             self.c = True
             self.a = self.wrap(self.a)
+        else:
+            self.c = False
 
+    def AND(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
 
+        #Perform logical AND
+        self.a = self.a & value
+    
+    def ORA(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
 
+        #Perform logical AND
+        self.a = self.a | value
+
+    def EOR(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Perform logical AND
+        self.a = self.a ^ value
 
     # Testing / Debugging
     def push(self, value):

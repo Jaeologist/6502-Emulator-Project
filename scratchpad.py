@@ -242,4 +242,13 @@ cpu.push(0x01)
 
 cpu.push(0x42) #DBG
 
- #Adding 255
+ #ORA
+ cpu.push(0xA9) # LDA 0xFF
+cpu.push(0x01)
+
+cpu.push(0x42) # DBG
+
+cpu.push(0x09) # ORA
+cpu.push(0x04)
+
+cpu.push(0x42) # DBG
