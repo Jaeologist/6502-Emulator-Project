@@ -7,9 +7,10 @@
 - Acummulator, X, and Y registers
 - Program counter
 - Stack pointer
+- System simulator 
 - Immediate, Zeropage, ZeropageX, Absolute, AbsoluteX, AbsoluteY, Implied, Indirect, and Relative addressing modes.
-- Loading instructions LDA, LDX, and LDY
-- Storing instructions STA,STX, and STY
+- Loading instructions LDA, LDX, LDY
+- Storing instructions STA, STX, STY
 - Increment and Decrement instructions INX, INY, DEX, DEY
 - Transfer instructions TAX, TXA, TAY, TYA, TXS, TSX
 - Flag instructions CLC, SEC, CLI, SEI, CLV, CLD, SED
@@ -18,8 +19,11 @@
 - Branch instructions BPL, BMI, BVC, BVS, BCC, BCS, BNE, BEQ
 - Stack instructions PHA, PLA, PHP, PLP, RTS
 - And/Or instructions ADC, AND, EOR, ORA
-- System simulator 
+- No operation instruction NOP
+- Subtract/Add Instructions SBC, ADC
+- Shift instructions LSR, ASL
+
 
 **Currently Working On**
-- Subtracting with Carry
-- No Operations
+- Rotate left instruction
+- Rotate right instruction
