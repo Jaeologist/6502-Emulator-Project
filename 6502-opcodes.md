@@ -430,9 +430,8 @@ which accesses $007F when X=$FF, use:
 which accesses $017F when X = $FF (a at cost of one additional byte and one additional cycle). All of the ZeroPage,X and ZeroPage,Y instructions except STX ZeroPage,Y and STY ZeroPage,X have a corresponding Absolute,X and Absolute,Y instruction. Unfortunately, a lot of 6502 assemblers don't have an easy way to force Absolute addressing, i.e. most will assemble a LDA $0080,X as B5 80. One way to overcome this is to insert the bytes using the .BYTE pseudo-op (on some 6502 assemblers this pseudo-op is called DB or DFB, consult the assembler documentation) as follows:
 
 ```
-
   .BYTE $BD,$80,$00  ; LDA $0080,X (absolute,X addressing mode)
-
+  
 ```
 
 The comment is optional, but highly recommended for clarity.
@@ -457,7 +456,7 @@ Affects Flags: none
 
 ```
 MODE           SYNTAX       HEX LEN TIM
-Implied       NOP           $EA  1   2
+Implied          NOP        $EA  1   2
 
 ```
 

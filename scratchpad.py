@@ -242,8 +242,8 @@ cpu.push(0x01)
 
 cpu.push(0x42) #DBG
 
- #ORA
- cpu.push(0xA9) # LDA 0xFF
+#ORA
+cpu.push(0xA9) # LDA 0xFF
 cpu.push(0x01)
 
 cpu.push(0x42) # DBG
@@ -252,3 +252,106 @@ cpu.push(0x09) # ORA
 cpu.push(0x04)
 
 cpu.push(0x42) # DBG
+
+#SBC 
+#Subtracting 1
+
+cpu.push(0xA9) # LDA 0x01
+cpu.push(0x01) 
+
+cpu.push(0x42) # DBG
+
+cpu.push(0x38) # SEC
+
+cpu.push(0x42) # DBG
+
+cpu.push(0xE9) # SBC 0x01
+cpu.push(0x01)
+
+cpu.push(0x42) # DBG
+
+ # With NOP
+cpu.push(0xA9) # LDA 0xXX
+cpu.push(0x01) 
+
+cpu.push(0x42) # DBG
+
+cpu.push(0xEA) # NOP
+cpu.push(0xEA) # NOP
+cpu.push(0xEA) # NOP
+
+cpu.push(0x38) # SEC
+
+cpu.push(0x42) # DBG
+
+cpu.push(0xE9) # SBC 0xXX
+cpu.push(0x01)
+
+cpu.push(0x42) # DBG
+
+#ASL - Shifting from 1 -> 2
+cpu.push(0xA9) # LDA 0xXX
+cpu.push(0x01) 
+
+cpu.push(0x42)
+
+cpu.push(0x0A) # ASL 
+
+cpu.push(0x42)
+
+    #Shifting 128
+cpu.push(0xA9) # LDA 0xXX
+cpu.push(0x01) 
+
+cpu.push(0x42)
+
+cpu.push(0x0A) # ASL 
+cpu.push(0x0A) # ASL 
+cpu.push(0x0A) # ASL 
+cpu.push(0x0A) # ASL 
+cpu.push(0x0A) # ASL 
+cpu.push(0x0A) # ASL 
+cpu.push(0x0A) # ASL
+# 8-bit translation - 10000000
+cpu.push(0x0A) # ASL  
+
+cpu.push(0x42)
+
+#LSR 
+
+cpu.push(0xA9) # LDA 0xXX
+cpu.push(0x80) 
+
+cpu.push(0x42)
+
+cpu.push(0x4A) # LSr  
+
+cpu.push(0x42) # DBG
+
+#ROR
+
+cpu.push(0xA9) # LDA 0xXX
+cpu.push(0x..) 
+
+cpu.push(0x38) #SEC
+
+cpu.push(0x42)
+
+cpu.push(0x6A) # ROR
+
+cpu.push(0x42)
+
+#ROL
+
+cpu.push(0xA9) # LDA 0xXX
+cpu.push(0x..) 
+
+cpu.push(0x38) #SEC
+
+cpu.push(0x42)
+
+cpu.push(0x2A) # ROL
+
+cpu.push(0x42)
+
+#...

@@ -212,6 +212,10 @@ class CPU:
         if value < 0:
             value += 256
         return value
+    
+    def set_nz(self, value):
+        self.z = (value == 0)
+        self.n = bool(value & 0x80)
 
     # Loading Accumulator
     def LDA(self, mode):
@@ -221,6 +225,8 @@ class CPU:
         #Putting the value in the accumulator
         self.a = val 
 
+        self.set_nz(self.a)
+
     # Loading X Register
     def LDX(self, mode):
         loc = self.get_location_by_mode(mode)
@@ -229,6 +235,9 @@ class CPU:
         #Putting the value in the accumulator
         self.x = val 
 
+        #Set NZ flags
+        self.set_nz(self.x)
+
     # Loading Y Register
     def LDY(self, mode):
         loc = self.get_location_by_mode(mode)
@@ -236,7 +245,10 @@ class CPU:
         val = self.memory[loc]
         #Putting the value in the accumulator
         self.y = val 
-    
+
+        #Set NZ flags
+        self.set_nz(self.y)
+
     # Storing Accumulator
     def STA(self, mode):
         # Find the location based on the mode
@@ -261,36 +273,60 @@ class CPU:
         self.x += 1
         self.x = self.wrap(self.x)
 
+        #Set NZ flags
+        self.set_nz(self.x)
+
     # Incrementing Y Register
     def INY(self, mode):
         self.y += 1
         self.y = self.wrap(self.y)
+
+        #Set NZ flags
+        self.set_nz(self.y)
 
     # Decrementing X Register
     def DEX(self, mode):
         self.x -= 1
         self.x = self.wrap(self.x)
 
+        #Set NZ flags
+        self.set_nz(self.x)
+
     # Decrementing Y Register
     def DEY(self, mode):
         self.y -= 1
         self.y = self.wrap(self.y)
 
+        #Set NZ flags
+        self.set_nz(self.y)
+
     # Transferring Accumulator to X Register
     def TAX(self, mode):
         self.x = self.a
+
+        #Set NZ flags
+        self.set_nz(self.x)
 
     # Transferring X Register to Accumulator
     def TXA(self, mode):
         self.a = self.x
 
+        #Set NZ flags
+        self.set_nz(self.a)
+
     # Transferring Accumulator to Y Register
     def TAY(self, mode):
         self.y = self.a
 
+        #Set NZ flags
+        self.set_nz(self.y)
+
     # Transferring Y Register to Accumulator
     def TYA(self, mode):
         self.a = self.y
+
+        #Set NZ flags
+        self.set_nz(self.a)
 
     # Clearing Carry Flag
     def CLC(self, mode):
@@ -339,6 +375,8 @@ class CPU:
         if self.a >= 128:
             self.n = True
             
+        #Set NZ flags
+        self.set_nz(self.a)
     #BMI
     def BMI(self, mode):
         loc = self.get_location_by_mode(mode)
@@ -461,6 +499,9 @@ class CPU:
     def TSX(self, mode):
         self.x = self.sp
 
+        #Set NZ flags
+        self.set_nz(self.x)
+
     #Push accumulator
     def PHA(self, mode):
         #Find the location
@@ -488,6 +529,9 @@ class CPU:
         #Copies value to accumulator
         self.a = self.memory[loc]
 
+        #Set NZ flags
+        self.set_nz(self.a)
+        
     #PHP
     def PHP(self, mode):
         val = 0
@@ -625,16 +669,20 @@ class CPU:
         #add value to accumulator
         self.a += value
 
+
         #if carry flag is set
         if self.c == True:
             self.a += 1
         
-        #carry and war around
+        #carry and wrap around
         if self.a > 255:
             self.c = True
             self.a = self.wrap(self.a)
         else:
             self.c = False
+        
+        #Set NZ flags
+        self.set_nz(self.a)
 
     def AND(self, mode):
         loc = self.get_location_by_mode(mode)
@@ -642,6 +690,9 @@ class CPU:
 
         #Perform logical AND
         self.a = self.a & value
+
+        #Set NZ flags
+        self.set_nz(self.a)
     
     def ORA(self, mode):
         loc = self.get_location_by_mode(mode)
@@ -650,12 +701,18 @@ class CPU:
         #Perform logical AND
         self.a = self.a | value
 
+        #Set NZ flags
+        self.set_nz(self.a)
+
     def EOR(self, mode):
         loc = self.get_location_by_mode(mode)
         value = self.memory[loc]
 
         #Perform logical AND
         self.a = self.a ^ value
+
+        #Set NZ flags
+        self.set_nz(self.a)
 
     def SBC(self, mode):
         loc = self.get_location_by_mode(mode)
@@ -675,6 +732,9 @@ class CPU:
                 self.c = False
             else:
                 self.c = True
+        
+        #Set NZ flags
+        self.set_nz(self.a)
 
     def NOP(self, mode):
         pass
@@ -689,6 +749,7 @@ class CPU:
         #Check the leftmost bit
         if value & 128 == 128:
             self.c = True 
+
         #shift left
         value = value << 1
 
@@ -700,6 +761,9 @@ class CPU:
             self.a = value
         else:
             self.memory[loc] = value
+
+        #Set NZ flags
+        self.set_nz(value)
 
     def LSR(self, mode): # Logical Shift Right(for my sake)
         if mode == Mode.ACCUMULATOR:
@@ -722,6 +786,9 @@ class CPU:
             self.a = value
         else:
             self.memory[loc] = value
+
+        # Set NZ flags
+        self.set_nz(value)
     
     def ROL(self, mode):
         if mode == Mode.ACCUMULATOR:
@@ -730,7 +797,7 @@ class CPU:
             loc = self.get_location_by_mode(mode)
             value = self.memory[loc]
         
-        # CHeck carry bit
+        # Check carry bit
         temp = 0
         if self.c == True:
             temp = 1 
@@ -756,6 +823,9 @@ class CPU:
             self.a = value
         else:
             self.memory[loc] = value
+
+        #Set NZ flags
+        self.set_nz(value)
 
     def ROR(self, mode):
         if mode == Mode.ACCUMULATOR:
@@ -789,6 +859,9 @@ class CPU:
             self.a = value
         else:
             self.memory[loc] = value
+
+        #Set NZ flags
+        self.set_nz(value)
 
     # Testing / Debugging
     def push(self, value):
