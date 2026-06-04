@@ -29,4 +29,3 @@
 - Missing Flags
 - Negative flag
 - Zero flag
-- 
