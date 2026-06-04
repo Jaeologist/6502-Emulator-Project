@@ -13,6 +13,7 @@ class Mode(Enum):
     IMPLIED = auto()
     INDIRECT = auto()
     RELATIVE = auto()
+    ACCUMULATOR = auto()
 
 class CPU:
     def __init__(self):
@@ -121,8 +122,12 @@ class CPU:
             0xE9: {"func":self.SBC, "m": Mode.IMMEDIATE},
 
             #No Opt. Command 
-            0xEA: {"func":self.NOP, "m": Mode.IMPLIED}
-        
+            0xEA: {"func":self.NOP, "m": Mode.IMPLIED},
+            
+            #Shifting Command
+            0x0A: {"func":self.ASL, "m": Mode.ACCUMULATOR},
+            0x4A: {"func":self.LSR, "m": Mode.ACCUMULATOR}
+           
         }
 
 
@@ -135,7 +140,8 @@ class CPU:
             Mode.ABSOLUTEX: 3,
             Mode.ABSOLUTEY: 3,
             Mode.INDIRECT: 3,
-            Mode.RELATIVE: 2
+            Mode.RELATIVE: 2,
+            Mode.ACCUMULATOR: 1
         }
 
     # Fetching and executing commands
@@ -193,6 +199,7 @@ class CPU:
             loc = msb * 256 + lsb
         elif mode == Mode.RELATIVE:
             loc = self.pc + 1
+        
 
         return loc
 
@@ -669,6 +676,50 @@ class CPU:
 
     def NOP(self, mode):
         pass
+    
+    def ASL(self, mode):
+        if mode == Mode.ACCUMULATOR:
+            value = self.a 
+        else:
+            loc = self.get_location_by_mode(mode)
+            value = self.memory[loc]
+        
+        #Check the leftmost bit
+        if value & 128 == 128:
+            self.c = True 
+        #shift left
+        value = value << 1
+
+        #wrap
+        value = self.wrap(value)
+
+        #Places back into the accumulator
+        if mode == Mode.ACCUMULATOR:
+            self.a = value
+        else:
+            self.memory[loc] = value
+
+    def LSR(self, mode):
+        if mode == Mode.ACCUMULATOR:
+            value = self.a 
+        else:
+            loc = self.get_location_by_mode(mode)
+            value = self.memory[loc]
+        
+        #Check the rightmost bit
+        if value & 1 == 1:
+            self.c = True 
+        #shift right
+        value = value >> 1
+
+        #wrap
+        value = self.wrap(value)
+
+        #Places back into the accumulator
+        if mode == Mode.ACCUMULATOR:
+            self.a = value
+        else:
+            self.memory[loc] = value
 
     # Testing / Debugging
     def push(self, value):
