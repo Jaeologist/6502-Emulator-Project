@@ -23,8 +23,9 @@
 - No operation instruction NOP
 - Subtract/Add Instructions SBC, ADC
 - Shift instructions LSR, ASL
-
+- Rotate instructions ROL, ROR
 
 **Currently Working On**
-- Rotate left instruction
-- Rotate right instruction
+- Missing Flags
+- Negative flag
+- Zero flag
