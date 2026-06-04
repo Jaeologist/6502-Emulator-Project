@@ -93,3 +93,24 @@ Progress
 - Added Add with Carry(ADC) along with
 - Added bitwise operators AND, ORA, EOR.
 - Tested ADC with adding values 240 to 241 and 255 to 0.
+
+June 3rd, 2026
+
+Challenges
+No challenges for today, Code went smoothly. 
+
+Progress
+- Added SBC instruction
+- Added NOP instruction
+- Added LSR instruction
+- Added ASL instruction
+- Successfully test SBC with and Without NOP.
+
+June 4th, 2026
+
+Challenges
+No challenges for today, code went smoothly. 
+
+Progress
+- Added ROL instructions
+- Added LOL instructions
