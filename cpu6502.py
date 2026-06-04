@@ -124,10 +124,12 @@ class CPU:
             #No Opt. Command 
             0xEA: {"func":self.NOP, "m": Mode.IMPLIED},
             
-            #Shifting Command
+            #Shifting/Rotating Command
             0x0A: {"func":self.ASL, "m": Mode.ACCUMULATOR},
-            0x4A: {"func":self.LSR, "m": Mode.ACCUMULATOR}
-           
+            0x4A: {"func":self.LSR, "m": Mode.ACCUMULATOR},
+            0x2A: {"func":self.ROL, "m":Mode.ACCUMULATOR},
+            0x6A: {"func":self.ROR, "m":Mode.ACCUMULATOR},
+            
         }
 
 
@@ -699,7 +701,7 @@ class CPU:
         else:
             self.memory[loc] = value
 
-    def LSR(self, mode):
+    def LSR(self, mode): # Logical Shift Right(for my sake)
         if mode == Mode.ACCUMULATOR:
             value = self.a 
         else:
@@ -716,6 +718,73 @@ class CPU:
         value = self.wrap(value)
 
         #Places back into the accumulator
+        if mode == Mode.ACCUMULATOR:
+            self.a = value
+        else:
+            self.memory[loc] = value
+    
+    def ROL(self, mode):
+        if mode == Mode.ACCUMULATOR:
+            value = self.a 
+        else:
+            loc = self.get_location_by_mode(mode)
+            value = self.memory[loc]
+        
+        # CHeck carry bit
+        temp = 0
+        if self.c == True:
+            temp = 1 
+
+        # Check the leftmost bit 
+        if value & 128 == 128:
+            self.c = True 
+        else:
+            self.c = False
+        
+        # Shift left
+        value = value << 1 
+
+        # Wrap
+        value = self.wrap(value)
+
+        # Add carry
+        value = value | temp
+        # it there's a 0 in the 8-bit it will give an OR and set it to 1. 
+
+        # Put the value into Accumulator or memory
+        if mode == Mode.ACCUMULATOR:
+            self.a = value
+        else:
+            self.memory[loc] = value
+
+    def ROR(self, mode):
+        if mode == Mode.ACCUMULATOR:
+            value = self.a
+        else:
+            loc = self.get_location_by_mode(mode)
+            value = self.memory[loc]
+        
+        #Check carry bit
+        temp = 0
+        if self.c == True:
+            temp = 128
+        
+        # CHeck the rightmost bit
+        if value & 1 == 1:
+            self.c = True 
+        else:
+            self.c = False
+        
+        #Shift Right
+        value = value >> 1
+
+        #Wrap
+        value = self.wrap(value)
+
+        # Add carry
+        value = value | temp
+
+        # Put the value into Accumulator or memory
         if mode == Mode.ACCUMULATOR:
             self.a = value
         else:
