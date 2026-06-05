@@ -531,7 +531,7 @@ class CPU:
 
         #Set NZ flags
         self.set_nz(self.a)
-        
+
     #PHP
     def PHP(self, mode):
         val = 0
