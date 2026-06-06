@@ -114,3 +114,16 @@ No challenges for today, code went smoothly.
 Progress
 - Added ROL instructions
 - Added LOL instructions
+
+June 5th, 2026
+
+Challenges
+The first challenge I ran across when creating the instructions was understanding exactly why I was getting certain flags at certain times. For example, when I would load a value into the accumulator or any of the registers, when would I get a zero flag? When would I get overflow? I grasp the concept but not the functionality. After reading google and help with ChatGPT, I am confident that whenever a value in a register is being compared, theses can result in it being overflowed, zero, negative, carry or multiple flags simultaneously based on it's comparison. For example, If I input 1 and compare it to 1, then my resulting flag will be zero and carry. If I compared it 1 to 0, then there's a carry flag because nothing is being borrowed in the system. The ADC and SBC was even harder to grasp but once I got it it made more sense. Whenever your adding or subtracting with carry this introduces overflow. For example, if I input $40(64) in my accumulator, the system will do $40 + $40 = $80(128). This will put me in overflow and negative. Because it's 8-bit the positive number ends at +127, which gives us negative. It's also overflow because it's going over +127. Hence the overflow. 
+
+Progress
+- Added A5 LDA instruction,
+- Added CPX instructions, CPY instructions,
+- Added INC instructions, DEC instructions.
+- Alphabetically organized cpu instructions methods for more effecient coding searches
+- Implemented set_nz methods on multiple instructions.
+- Tested CPX, CPY, INC, and DEC in system file
