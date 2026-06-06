@@ -1,3 +1,4 @@
+from collections.abc import ValuesView
 from enum import Enum, auto
 from pickle import FALSE
 from re import A
@@ -21,19 +22,19 @@ class CPU:
         for _ in range(0, 65536):
             self.memory.append(0)
 
-        self.a = 0x00 #accumulator
-        self.x = 0x00  #x register
-        self.y = 0x00 #y register
-        self.pc = 0x1000 #program counter
-        self.sp = 0xFF #stack 
+        self.a = 0x00 # Accumulator
+        self.x = 0x00 # X Register
+        self.y = 0x00 # Y Register
+        self.pc = 0x1000 # Program Counter
+        self.sp = 0xFF # Stack 
 
-        self.n = False #Negative flag
-        self.v = False #Overflow flag
-        self.b = False #Break flag
-        self.d = False #Decimal flag
-        self.i = False #Interrupt flag
-        self.z = False #Zero flag
-        self.c = False #Carry flag
+        self.n = False # Negative flag
+        self.v = False # Overflow flag
+        self.b = False # Break flag
+        self.d = False # Decimal flag
+        self.i = False # Interrupt flag
+        self.z = False # Zero flag
+        self.c = False # Carry flag
 
         self.commands = {  
             #Debugging commands
@@ -242,14 +243,33 @@ class CPU:
         loc = self.get_location_by_mode(mode)
         value = self.memory[loc]
 
+        #Temp values
+        temp_value = value 
+        temp_a = self.a 
+
         #Add value to accumulator
         self.a += value
 
         #if carry flag is set
         if self.c == True:
             self.a += 1
-        
-        #carry and wrap around
+
+        # Set Overflow if it's neccessary
+        # negative negative positive
+        print(bool(temp_value & 128), bool(temp_a & 128), not bool(self.wrap(self.a)))
+
+        #        value's negative          a's negative        result of a is positive
+        if bool(temp_value & 128) and bool(temp_a & 128) and  not bool(self.wrap(self.a) & 128):
+            #there's an overflow
+            self.v = True
+        # positive positive negative
+        elif not bool(temp_value & 128) and not bool(temp_a & 128) and bool(self.wrap(self.a) & 128):
+            #Gives an overflow
+            self.v = True
+        else:
+            self.v = False
+
+        # Carry and wrap around
         if self.a > 255:
             self.c = True
             self.a = self.wrap(self.a)
@@ -836,12 +856,31 @@ class CPU:
         loc = self.get_location_by_mode(mode)
         value = self.memory[loc]
 
+        #Temp values
+        temp_value = value 
+        temp_a = self.a
+
         #Subtract value to accumulator
         self.a -= value
 
         # Check carry flag 
         if self.c == False:
             self.a -= 1
+          
+        # Set Overflow if it's neccessary
+        # negative negative positive
+        print(bool(temp_value & 128), bool(temp_a & 128), not bool(self.wrap(self.a)))
+
+        #        value's negative          a's negative        result of a is positive
+        if bool(temp_value & 128) and bool(temp_a & 128) and  not bool(self.wrap(self.a) & 128):
+            #there's an overflow
+            self.v = True
+        # positive positive negative
+        elif not bool(temp_value & 128) and not bool(temp_a & 128) and bool(self.wrap(self.a) & 128):
+            #Gives an overflow
+            self.v = True
+        else:
+            self.v = False
 
         if self.a < 0:
             self.a = self.wrap(self.a)

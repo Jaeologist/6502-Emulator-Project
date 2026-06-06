@@ -400,4 +400,16 @@ cpu.push(0x44)
 
 cpu.push(0x42) #DBG
 
-#...
+# Overflow Flag Testing with ADC
+cpu.push(0xA9) #LDA #0x..
+cpu.push(0x ) #0x..
+
+cpu.push(0x42) #DBG
+
+
+cpu.push(0x69) #ADC #0x..
+cpu.push(0x )
+
+cpu.push(0x42) #DBG
+
+
