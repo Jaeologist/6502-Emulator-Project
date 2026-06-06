@@ -7,7 +7,7 @@ print(cpu.a)
 
 cpu.pc = 0x1000
 
-# Overflow Flag Testing with ADC
+# Overflow Flag Testing with SBC
 cpu.push(0xA9) #LDA #0x..
 cpu.push(0x80) #0x4000
 

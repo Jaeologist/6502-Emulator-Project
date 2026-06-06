@@ -1,18 +1,19 @@
-cpu.push(0xA2) #LDX 0x45
-cpu.push(0x45)
+#Testing: LDX LDY STX STY
+cpu.push(0xA2) #LDX 0x
+cpu.push(0x..)
 
 cpu.push(0xA0) #LDY 0x46
-cpu.push(0x46) 
+cpu.push(0x..) 
 
 cpu.push(0x42) #DBG
 
 cpu.push(0x8E) #STX 
-cpu.push(0x01)
-cpu.push(0x44)
+cpu.push(0x..)
+cpu.push(0x..)
 
 cpu.push(0x8C) #STY
-cpu.push(0x02)
-cpu.push(0x44)
+cpu.push(0x..)
+cpu.push(0x..)
 
 cpu.push(0xE8) #INX
 cpu.push(0xC8) #INY
@@ -20,7 +21,7 @@ cpu.push(0xC8) #INY
 cpu.push(0x42) #DBG 
 
 
-#Test flags
+#Testing: SEC SEI SED 
 cpu.push(0x38) #SEC
 cpu.push(0x42) #DBG
 
@@ -30,40 +31,38 @@ cpu.push(0x42) #DBG
 cpu.push(0xF8) #SED
 cpu.push(0x42) #DBG
 
-#Test Jump
-cpu.push(0xA9) #LDA 0x0D LSB 0x100D
-cpu.push(0x0D)
+#Testing: JMP TAX DEX
+cpu.push(0xA9) #LDA
+cpu.push(0x  )
 
-cpu.push(0x8D) #STA 2000
-cpu.push(0x00)
-cpu.push(0x20)
+cpu.push(0x8D) #STA 0x..
+cpu.push(0x  )
+cpu.push(0x  )
 
-cpu.push(0xA9) #LDA 0x10 MSB 0x100D
-cpu.push(0x10)
+cpu.push(0xA9) #LDA 0x..
+cpu.push(0x  )
 
-cpu.push(0x8D) #STA 2001
-cpu.push(0x01)
-cpu.push(0x20)
+cpu.push(0x8D) #STA 0x..
+cpu.push(0x  )
+cpu.push(0x  )
 
-cpu.push(0xA9) #LDA 0x02
-cpu.push(0x02)
+cpu.push(0xA9) #LDA 
+cpu.push(0x  )
 
 cpu.push(0xAA) #TAX
-cpu.push(0xCA) #DEX LOC 0x100D
+cpu.push(0xCA) #DEX LOC 0x..
 
 cpu.push(0x42) #DBG
-cpu.push(0x6C) #JMP 0x2000 (loop)
-cpu.push(0x00)
-cpu.push(0x20)
+cpu.push(0x6C) #JMP 0x..
+cpu.push(0x  )
+cpu.push(0x  )
 
-#Test Compare
-cpu.pc = 0x1000
+#Testing: CMP
+cpu.push(0xA9) #LDA
+cpu.push(0x  )
 
-cpu.push(0xA9) #Loading accumuluator with 0x01
-cpu.push(0x90)
-
-cpu.push(0xC9) #Comparing accumulator with 0x02
-cpu.push(0x01)
+cpu.push(0xC9) #CMP
+cpu.push(0x  )
 
 cpu.push(0x42) #Debugging
 
@@ -90,69 +89,68 @@ cpu.push(0xFF)
 
 cpu.push(0x42) #DBG
 
-#Negative BMI
-
-cpu.push(0xA2) #LDX #0xFF
-cpu.push(0xFF)
-
-cpu.push(0x42) #DBG
-
-cpu.push(0xA9) #LDA #0x90
-cpu.push(0x90)
-
-cpu.push(0xC9) #CMP 0x01
-cpu.push(0x01)
+#Testing: Negative BMI
+cpu.push(0xA2) #LDX
+cpu.push(0x  )
 
 cpu.push(0x42) #DBG
 
-cpu.push(0x30) #BMI LDX 0xFF
-cpu.push(0xF6)
+cpu.push(0xA9) #LDA 
+cpu.push(0x  )
+
+cpu.push(0xC9) #CMP 
+cpu.push(0x  )
+
+cpu.push(0x42) #DBG
+
+cpu.push(0x30) #BMI
+cpu.push(0x  )
 
 cpu.push(0xA2) #LDX #0x01
-cpu.push(0x01)
+cpu.push(0x  )
 
 cpu.push(0x42) #DBG
 
-cpu.pc = 0x1003 #Remember this change
+cpu.pc = 0x1003 #Remember this change, it's important
 
-#DEQ 
-cpu.push(0xA2) #LDX #0xFF
-cpu.push(0xFF)
-
-cpu.push(0x42) #DBG
-
-cpu.push(0xA9) #LDA #0x90
-cpu.push(0x90)
-
-cpu.push(0xC9) #CMP 0x01
-cpu.push(0x01)
+#Testing: DEQ CMP BEQ
+cpu.push(0xA2) #LDX #0x
+cpu.push(0x  )
 
 cpu.push(0x42) #DBG
 
-cpu.push(0xF0) #BEQ LDX 0xFF
-cpu.push(0xF6)
+cpu.push(0xA9) #LDA #0x..
+cpu.push(0x  )
 
-cpu.push(0xA2) #LDX #0x01
-cpu.push(0x01)
+cpu.push(0xC9) #CMP 0x..
+cpu.push(0x  )
 
 cpu.push(0x42) #DBG
 
-# PHA 
-cpu.push(0xA9) # LDA 0x0A
-cpu.push(0x0A)
+cpu.push(0xF0) #BEQ 
+cpu.push(0x..)
+
+cpu.push(0xA2) #LDX #0x..
+cpu.push(0x..)
+
+cpu.push(0x42) #DBG
+
+#Testing: PHA PLA 
+cpu.push(0xA9) # LDA
+cpu.push(0x..)
 
 cpu.push(0x48) # PHA
 
 cpu.push(0x42) # DBG
 
-cpu.push(0xAE) # LDX 0x1FF
-cpu.push(0xFF)
-cpu.push(0x01)
+cpu.push(0xAE) # LDX 
+cpu.push(0x..)
+cpu.push(0x..)
 
 cpu.push(0x42) # DBG
 
-cpu.push(0xA9) # LDA 0x00
-cpu.push(0x00)
+cpu.push(0xA9) # LDA
+cpu.push(0x..)
 
 cpu.push(0x42) # DBG
 
@@ -160,45 +158,44 @@ cpu.push(0x68) # PLA
 
 cpu.push(0x42) # DBG
 
-# DEQ
+#Testing: DEQ
 cpu.push(0xA2) # LDX #0xFF
-cpu.push(0xFF)
+cpu.push(0x..)
 
 cpu.push(0x42) # DBG
 
-cpu.push(0xA9) # LDA #0x90
-cpu.push(0x90)
+cpu.push(0xA9) # LDA #0x..
+cpu.push(0x..)
 
-cpu.push(0xC9) # CMP #0x01
-cpu.push(0x01)
+cpu.push(0xC9) # CMP #0x..
+cpu.push(0x..)
 
 cpu.push(0x42) # DBG
 
-cpu.push(0xF0) # BEQ LDX #0x01
+cpu.push(0xF0) # BEQ
 cpu.push(0xF6)
 
-cpu.push(0xA2) # LDX #0x01
-cpu.push(0x01)
+cpu.push(0xA2) # LDX #0x..
+cpu.push(0x..)
 
 cpu.push(0x42) # DBG
 
-#PHP and PLP Testing
+#Testing: PHP PLP
+cpu.push(0xA9) # LDA 0x..
+cpu.push(0x..)
 
-cpu.push(0xA9) # LDA 0x90
-cpu.push(0x90)
-
-cpu.push(0xC9) # CMP 0x01
-cpu.push(0x01)
+cpu.push(0xC9) # CMP 0x..
+cpu.push(0x..)
 
 cpu.push(0x42) # DBG
 
 cpu.push(0x08) # PHP
 
-cpu.push(0xA9) # LDA 0x00
-cpu.push(0x00)
+cpu.push(0xA9) # LDA 0x..
+cpu.push(0x..)
 
-cpu.push(0xC9) # CMP 0x00
-cpu.push(0x00)
+cpu.push(0xC9) # CMP 0x..
+cpu.push(0x..)
 
 cpu.push(0x42)
 
@@ -206,58 +203,56 @@ cpu.push(0x28) # PLP
 
 cpu.push(0x42) # DBG
 
-#JSR / RTS test            Sequence of Events
-
+#Testing: JSR RTS          Sequence of Events
 cpu.push(0x20) #JSR        Jumps to different 1008 memory loction        
-cpu.push(0x08) #           loads 1 into x register
-cpu.push(0x10) #           Returns from sub routine to jump back to 1004
+cpu.push(0x..) #           loads  into x reg
+cpu.push(0x..) #           Returns from sub routine to jump back to 1004
 #                          Debugs
-cpu.push(0x42) #DBG        Loads 2 to Y
+cpu.push(0x42) #DBG        Loads into y reg
 #                          Debugs
-cpu.push(0xA0) #LDY #$02   
-cpu.push(0x02) #
+cpu.push(0xA0) #LDY 0x.. 
+cpu.push(0x..) #
 
 cpu.push(0x42) #DBG
 
 cpu.push(0) #Halt on error
 
-cpu.push(0xA2) #LDX #$01
-cpu.push(0x01) #
+cpu.push(0xA2) #LDX 0x..
+cpu.push(0x..) 
 
 cpu.push(0x42)
 
 cpu.push(0x60) #RTS
 
-#ADC Testing
- #Adding 240
-
-cpu.push(0xA9) # LDA 0xFF
-cpu.push(0xF0)
+#Testing:ADC
+#Adding 240
+cpu.push(0xA9) # LDA 0x..
+cpu.push(0x..)
 
 cpu.push(0x42)
+
 #cpu.push(0x38) # SEC
 
-cpu.push(0x69) #ADC 0x01 (adds one to accumulator)
-cpu.push(0x01)
+cpu.push(0x69) #ADC 0x..
+cpu.push(0x..)
 
 cpu.push(0x42) #DBG
 
-#ORA
-cpu.push(0xA9) # LDA 0xFF
-cpu.push(0x01)
+#Testing: ORA
+cpu.push(0xA9) # LDA 0x..
+cpu.push(0x..)
 
 cpu.push(0x42) # DBG
 
 cpu.push(0x09) # ORA
-cpu.push(0x04)
+cpu.push(0x..)
 
 cpu.push(0x42) # DBG
 
-#SBC 
+#Testing: SBC 
 #Subtracting 1
-
-cpu.push(0xA9) # LDA 0x01
-cpu.push(0x01) 
+cpu.push(0xA9) # LDA 0x..
+cpu.push(0x..) 
 
 cpu.push(0x42) # DBG
 
@@ -265,14 +260,14 @@ cpu.push(0x38) # SEC
 
 cpu.push(0x42) # DBG
 
-cpu.push(0xE9) # SBC 0x01
-cpu.push(0x01)
+cpu.push(0xE9) # SBC 0x..
+cpu.push(0x..)
 
 cpu.push(0x42) # DBG
 
- # With NOP
-cpu.push(0xA9) # LDA 0xXX
-cpu.push(0x01) 
+#Testing: SBC with NOP
+cpu.push(0xA9) # LDA 0x..
+cpu.push(0x..) 
 
 cpu.push(0x42) # DBG
 
@@ -284,13 +279,13 @@ cpu.push(0x38) # SEC
 
 cpu.push(0x42) # DBG
 
-cpu.push(0xE9) # SBC 0xXX
-cpu.push(0x01)
+cpu.push(0xE9) # SBC 0x..
+cpu.push(0x..)
 
 cpu.push(0x42) # DBG
 
-#ASL - Shifting from 1 -> 2
-cpu.push(0xA9) # LDA 0xXX
+#Testing: ASL - Shifting from 1 -> 2
+cpu.push(0xA9) # LDA 0x..
 cpu.push(0x01) 
 
 cpu.push(0x42)
@@ -301,7 +296,7 @@ cpu.push(0x42)
 
     #Shifting 128
 cpu.push(0xA9) # LDA 0xXX
-cpu.push(0x01) 
+cpu.push(0x..) 
 
 cpu.push(0x42)
 
@@ -313,24 +308,24 @@ cpu.push(0x0A) # ASL
 cpu.push(0x0A) # ASL 
 cpu.push(0x0A) # ASL
 # 8-bit translation - 10000000
+
 cpu.push(0x0A) # ASL  
 
 cpu.push(0x42)
 
-#LSR 
-
-cpu.push(0xA9) # LDA 0xXX
-cpu.push(0x80) 
+#Testing: LSR 
+cpu.push(0xA9) # LDA 0x..
+cpu.push(0x..) 
 
 cpu.push(0x42)
 
-cpu.push(0x4A) # LSr  
+cpu.push(0x4A) # LSR  
 
 cpu.push(0x42) # DBG
 
-#ROR
+#Testing: ROR
 
-cpu.push(0xA9) # LDA 0xXX
+cpu.push(0xA9) # LDA 0x..
 cpu.push(0x..) 
 
 cpu.push(0x38) #SEC
@@ -341,9 +336,9 @@ cpu.push(0x6A) # ROR
 
 cpu.push(0x42)
 
-#ROL
+#Testing: ROL
 
-cpu.push(0xA9) # LDA 0xXX
+cpu.push(0xA9) # LDA 0x..
 cpu.push(0x..) 
 
 cpu.push(0x38) #SEC
@@ -356,60 +351,70 @@ cpu.push(0x42)
 
 # Testing CPX,INC,DEC
 cpu.push(0xA2) #LDX #0x01
-cpu.push(0x01)
+cpu.push(0x..)
 
 cpu.push(0xE0) #CPX #0x01
-cpu.push(0x00)
+cpu.push(0x..)
 
 cpu.push(0x42) #DBG
 
 cpu.push(0xA0) #LDY #0x01
-cpu.push(0x01)
+cpu.push(0x..)
 
 cpu.push(0xC0) #CPY #0x01
-cpu.push(0x01)
+cpu.push(0x..)
 
 cpu.push(0x42) #DBG
 
 cpu.push(0xA9) #LDA #0x01
-cpu.push(0x01)
+cpu.push(0x..)
 
-cpu.push(0x8D) # STA $4400
-cpu.push(0x00)
-cpu.push(0x44)
-
-cpu.push(0x42) #DBG
-
-cpu.push(0xCE) #DEC $4400
-cpu.push(0x00)
-cpu.push(0x44)
-
-cpu.push(0xAD) #LDA $4400
-cpu.push(0x00)
-cpu.push(0x44)
+cpu.push(0x8D) # STA 0x..
+cpu.push(0x..)
+cpu.push(0x..)
 
 cpu.push(0x42) #DBG
 
-cpu.push(0xEE) #INC $4400
-cpu.push(0x00)
-cpu.push(0x44)
+cpu.push(0xCE) #DEC $....
+cpu.push(0x..)
+cpu.push(0x..)
 
-cpu.push(0xAD) #LDA $4400
-cpu.push(0x00)
-cpu.push(0x44)
-
-cpu.push(0x42) #DBG
-
-# Overflow Flag Testing with ADC
-cpu.push(0xA9) #LDA #0x..
-cpu.push(0x ) #0x..
+cpu.push(0xAD) #LDA $....
+cpu.push(0x..)
+cpu.push(0x..)
 
 cpu.push(0x42) #DBG
 
+cpu.push(0xEE) #INC $....
+cpu.push(0x..)
+cpu.push(0x..)
 
-cpu.push(0x69) #ADC #0x..
-cpu.push(0x )
+cpu.push(0xAD) #LDA $....
+cpu.push(0x..)
+cpu.push(0x..)
+
+cpu.push(0x42) #DBG
+
+#Testing: Overflow Flag with ADC
+cpu.push(0xA9) #LDA 0x..
+cpu.push(0x..) 
 
 cpu.push(0x42) #DBG
 
 
+cpu.push(0x69) #ADC 0x..
+cpu.push(0x..)
+
+cpu.push(0x42) #DBG
+
+#Testing: Overflow Flag with SBC
+cpu.push(0xA9) #LDA 0x..
+cpu.push(0x..) 
+
+cpu.push(0x42) #DBG
+
+
+cpu.push(0xE9) #SBC 0x..
+cpu.push(0x..)
+
+cpu.push(0x42) #DBG
