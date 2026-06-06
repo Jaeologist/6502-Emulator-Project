@@ -12,11 +12,11 @@
 - Flags negative, carry, zero, decimal, break, interupt, overflow
 - Loading instructions LDA, LDX, LDY
 - Storing instructions STA, STX, STY
-- Increment/Decrement instructions INX, INY, DEX, DEY
+- Increment/Decrement instructions INC, INX, INY, DEC, DEX, DEY
 - Transfer instructions TAX, TXA, TAY, TYA, TXS, TSX
 - Flag instructions CLC, SEC, CLI, SEI, CLV, CLD, SED
 - Jump instructions JMP, JSR
-- Compare instructions CMP
+- Compare instructions CMP, CPX, CPY
 - Branch instructions BPL, BMI, BVC, BVS, BCC, BCS, BNE, BEQ
 - Stack instructions PHA, PLA, PHP, PLP, RTS
 - And/Or instructions ADC, AND, EOR, ORA
@@ -26,6 +26,6 @@
 - Rotate instructions ROL, ROR
 
 **Currently Working On**
-- Missing Flags
-- Negative flag
-- Zero flag
+- BIT instruction
+- INDIRECTX mode
+- INDIRECTY mode
