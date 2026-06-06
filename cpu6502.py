@@ -42,6 +42,7 @@ class CPU:
             #Loading Commands
             0xA9: {"func": self.LDA, "m": Mode.IMMEDIATE},
             0xA5: {"func": self.LDA, "m": Mode.ZEROPAGE},
+            0xAD: {"func": self.LDA, "m": Mode.ABSOLUTE},
             0xB5: {"func": self.LDA, "m": Mode.ZEROPAGEX},
             0xBD: {"func": self.LDA, "m": Mode.ABSOLUTEX},
             0xB9: {"func": self.LDA, "m": Mode.ABSOLUTEY},
@@ -129,9 +130,29 @@ class CPU:
             0x4A: {"func":self.LSR, "m": Mode.ACCUMULATOR},
             0x2A: {"func":self.ROL, "m":Mode.ACCUMULATOR},
             0x6A: {"func":self.ROR, "m":Mode.ACCUMULATOR},
-            
-        }
 
+            #CPX Commands
+            0xE0: {"func":self.CPX, "m":Mode.IMMEDIATE},
+            0xE4: {"func":self.CPX, "m":Mode.ZEROPAGE},
+            0xEC: {"func":self.CPX, "m":Mode.ABSOLUTE},
+
+            #CPY Commands
+            0xC0: {"func":self.CPY, "m":Mode.IMMEDIATE},
+            0xC4: {"func":self.CPY, "m":Mode.ZEROPAGE},
+            0xCC: {"func":self.CPY, "m":Mode.ABSOLUTE},
+
+            #INC Commands
+            0xE6: {"func":self.INC, "m":Mode.ZEROPAGE},
+            0xF6: {"func":self.INC, "m":Mode.ZEROPAGEX},
+            0xEE: {"func":self.INC, "m":Mode.ABSOLUTE},
+            0xFE: {"func":self.INC, "m":Mode.ABSOLUTEX},
+
+            #DEC Commands
+            0xC6: {"func":self.DEC, "m":Mode.ZEROPAGE},
+            0xD6: {"func":self.DEC, "m":Mode.ZEROPAGEX},
+            0xCE: {"func":self.DEC, "m":Mode.ABSOLUTE},
+            0xDE: {"func":self.DEC, "m":Mode.ABSOLUTEX},
+        }
 
         self.increments = {
             Mode.IMMEDIATE: 2,
@@ -217,6 +238,327 @@ class CPU:
         self.z = (value == 0)
         self.n = bool(value & 0x80)
 
+    def ADC(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Add value to accumulator
+        self.a += value
+
+        #if carry flag is set
+        if self.c == True:
+            self.a += 1
+        
+        #carry and wrap around
+        if self.a > 255:
+            self.c = True
+            self.a = self.wrap(self.a)
+        else:
+            self.c = False
+        
+        #Set NZ flags
+        self.set_nz(self.a)
+
+    def AND(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Perform logical AND
+        self.a = self.a & value
+
+        #Set NZ flags
+        self.set_nz(self.a)
+    
+    def ASL(self, mode):
+        if mode == Mode.ACCUMULATOR:
+            value = self.a 
+        else:
+            loc = self.get_location_by_mode(mode)
+            value = self.memory[loc]
+        
+        #Check the leftmost bit
+        if value & 128 == 128:
+            self.c = True 
+
+        #shift left
+        value = value << 1
+
+        #wrap
+        value = self.wrap(value)
+
+        #Places back into the accumulator
+        if mode == Mode.ACCUMULATOR:
+            self.a = value
+        else:
+            self.memory[loc] = value
+
+        #Set NZ flags
+        self.set_nz(value)
+
+    def BCC(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.c == False:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+    
+    def BCS(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.c == True:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+    
+    def BEQ(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.z == True:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+
+    #Transfer X Register to Stack Pointer
+    def BMI(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.n == True:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+
+    def BNE(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.z == False:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+    
+    def BPL(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.n == False:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+
+    def BVC(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.v == True:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+    
+    def BVS(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Jump to the offset
+        if self.v == False:
+            #Recalculate if negative
+            if value >= 128:
+                value -= 256
+
+            self.pc = self.pc + value
+
+            print(f"Negative: {value}")
+    
+    def CLC(self, mode):
+        self.c = False 
+
+    # Setting Carry Flag
+    def CLD(self, mode):
+        self.d = False
+
+    # Setting Decimal Flag
+    def CLI(self, mode):
+        self.i = False
+
+    # Setting Interrupt Flag
+    def CLV(self, mode):
+        self.v = False
+
+    # Clearing Decimal Flag
+    def CMP(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        if value >= self.a:
+            self.c = True
+          
+        if value == self.a:
+            self.z = True
+
+        if self.a >= 128:
+            self.n = True
+    
+    def CPX(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        if value >= self.x:
+            self.c = True
+        
+        if value == self.x:
+            self.z = True
+
+        if self.x >= 128:
+            self.n = True
+
+    def CPY(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        if value >= self.y:
+            self.c = True
+
+        if value == self.y:
+            self.z = True
+
+        if self.y >= 128:
+            self.n = True
+
+    def DEC(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        value -= 1
+        value = self.wrap(value)
+        self.memory[loc] = value
+
+        #Set NZ flags
+        self.set_nz(value)
+
+    def DEX(self, mode):
+        self.x -= 1
+        self.x = self.wrap(self.x)
+
+        #Set NZ flags
+        self.set_nz(self.x)
+
+    # Decrementing Y Register
+    def DEY(self, mode):
+        self.y -= 1
+        self.y = self.wrap(self.y)
+
+        #Set NZ flags
+        self.set_nz(self.y)
+
+    # Transferring Accumulator to X Register
+    def EOR(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Perform logical AND
+        self.a = self.a ^ value
+
+        #Set NZ flags
+        self.set_nz(self.a)
+
+    def INC(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        value += 1
+        value = self.wrap(value)
+        self.memory[loc] = value
+
+        #Set NZ flags
+        self.set_nz(value)
+
+
+    def INX(self, mode):
+        self.x += 1
+        self.x = self.wrap(self.x)
+
+        #Set NZ flags
+        self.set_nz(self.x)
+
+    # Incrementing Y Register
+    def INY(self, mode):
+        self.y += 1
+        self.y = self.wrap(self.y)
+
+        #Set NZ flags
+        self.set_nz(self.y)
+
+    # Decrementing X Register
+    def JMP(self, mode):
+        loc = self.get_location_by_mode(mode)
+        self.pc = loc - self.increments[mode]
+
+    # Comparing Accumulator with Memory
+    def JSR(self,mode):
+        #Return location (-1)
+        loc = self.pc + 2
+
+        msb = loc % 256
+        lsb = loc - (msb * 256)
+
+        # Copy from the accumulator 
+        temp_a = self.a
+
+        #Push onto stack
+        self.a = msb
+        self.PHA(mode)
+
+        self.a = lsb
+        self.PHA(mode)
+
+        #Copy temp onto a
+        self.a = temp_a
+
+        #Change program counter to new location
+        loc = self.get_location_by_mode(mode)
+
+        #Set program counter to location
+        self.pc = loc - self.increments[mode]
+
     # Loading Accumulator
     def LDA(self, mode):
         loc = self.get_location_by_mode(mode)
@@ -249,260 +591,45 @@ class CPU:
         #Set NZ flags
         self.set_nz(self.y)
 
-    # Storing Accumulator
-    def STA(self, mode):
-        # Find the location based on the mode
-        loc = self.get_location_by_mode(mode)
-        #Update memory
-        self.memory[loc] = self.a
+    # Logical Shift Right 
+    def LSR(self, mode):
+        if mode == Mode.ACCUMULATOR:
+            value = self.a 
+        else:
+            loc = self.get_location_by_mode(mode)
+            value = self.memory[loc]
         
-    # Storing X Register
-    def STX(self, mode):
-        loc = self.get_location_by_mode(mode)
-        #Update memory
-        self.memory[loc] = self.x
-        
-    # Storing Y Register
-    def STY(self, mode):
-        loc = self.get_location_by_mode(mode)
-        #Update memory
-        self.memory[loc] = self.y
+        #Check the rightmost bit
+        if value & 1 == 1:
+            self.c = True 
+        #shift right
+        value = value >> 1
+
+        #wrap
+        value = self.wrap(value)
+
+        #Places back into the accumulator
+        if mode == Mode.ACCUMULATOR:
+            self.a = value
+        else:
+            self.memory[loc] = value
+
+        # Set NZ flags
+        self.set_nz(value)
     
-    # Incrementing X Register
-    def INX(self, mode):
-        self.x += 1
-        self.x = self.wrap(self.x)
+    def NOP(self, mode):
+        pass
+    
+    def ORA(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
 
-        #Set NZ flags
-        self.set_nz(self.x)
-
-    # Incrementing Y Register
-    def INY(self, mode):
-        self.y += 1
-        self.y = self.wrap(self.y)
-
-        #Set NZ flags
-        self.set_nz(self.y)
-
-    # Decrementing X Register
-    def DEX(self, mode):
-        self.x -= 1
-        self.x = self.wrap(self.x)
-
-        #Set NZ flags
-        self.set_nz(self.x)
-
-    # Decrementing Y Register
-    def DEY(self, mode):
-        self.y -= 1
-        self.y = self.wrap(self.y)
-
-        #Set NZ flags
-        self.set_nz(self.y)
-
-    # Transferring Accumulator to X Register
-    def TAX(self, mode):
-        self.x = self.a
-
-        #Set NZ flags
-        self.set_nz(self.x)
-
-    # Transferring X Register to Accumulator
-    def TXA(self, mode):
-        self.a = self.x
+        #Perform logical AND
+        self.a = self.a | value
 
         #Set NZ flags
         self.set_nz(self.a)
 
-    # Transferring Accumulator to Y Register
-    def TAY(self, mode):
-        self.y = self.a
-
-        #Set NZ flags
-        self.set_nz(self.y)
-
-    # Transferring Y Register to Accumulator
-    def TYA(self, mode):
-        self.a = self.y
-
-        #Set NZ flags
-        self.set_nz(self.a)
-
-    # Clearing Carry Flag
-    def CLC(self, mode):
-        self.c = False 
-
-    # Setting Carry Flag
-    def SEC(self, mode):
-        self.c = True
-
-    # Clearing Interrupt Flag
-    def CLI(self, mode):
-        self.i = False
-
-    # Setting Interrupt Flag
-    def SEI(self, mode):
-        self.i = True
-
-    # Clearing Overflow Flag
-    def CLV(self, mode):
-        self.v = False
-
-    # Clearing Decimal Flag
-    def CLD(self, mode):
-        self.d = False
-
-    # Setting Decimal Flag
-    def SED(self, mode):
-        self.d = True
-
-    # Jumping to a new location
-    def JMP(self, mode):
-        loc = self.get_location_by_mode(mode)
-        self.pc = loc - self.increments[mode]
-
-    # Comparing Accumulator with Memory
-    def CMP(self, mode):
-        loc = self.get_location_by_mode(mode)
-        value = self.memory[loc]
-
-        if value >= self.a:
-            self.c = True
-
-        if value == self.a:
-            self.z = True
-        
-        if self.a >= 128:
-            self.n = True
-            
-        #Set NZ flags
-        self.set_nz(self.a)
-    #BMI
-    def BMI(self, mode):
-        loc = self.get_location_by_mode(mode)
-        value = self.memory[loc]
-
-        #Jump to the offset
-        if self.n == True:
-            #Recalculate if negative
-            if value >= 128:
-                value -= 256
-
-            self.pc = self.pc + value
-
-            print(f"Negative: {value}")
-
-    # BPL
-    def BPL(self, mode):
-        loc = self.get_location_by_mode(mode)
-        value = self.memory[loc]
-
-        #Jump to the offset
-        if self.n == False:
-            #Recalculate if negative
-            if value >= 128:
-                value -= 256
-
-            self.pc = self.pc + value
-
-            print(f"Negative: {value}")
-    # BVC
-    def BVC(self, mode):
-        loc = self.get_location_by_mode(mode)
-        value = self.memory[loc]
-
-        #Jump to the offset
-        if self.v == True:
-            #Recalculate if negative
-            if value >= 128:
-                value -= 256
-
-            self.pc = self.pc + value
-
-            print(f"Negative: {value}")
-    # BVS
-    def BVS(self, mode):
-        loc = self.get_location_by_mode(mode)
-        value = self.memory[loc]
-
-        #Jump to the offset
-        if self.v == False:
-            #Recalculate if negative
-            if value >= 128:
-                value -= 256
-
-            self.pc = self.pc + value
-
-            print(f"Negative: {value}")
-    # BCC
-    def BCC(self, mode):
-        loc = self.get_location_by_mode(mode)
-        value = self.memory[loc]
-
-        #Jump to the offset
-        if self.c == False:
-            #Recalculate if negative
-            if value >= 128:
-                value -= 256
-
-            self.pc = self.pc + value
-
-            print(f"Negative: {value}")
-    # BCS
-    def BCS(self, mode):
-        loc = self.get_location_by_mode(mode)
-        value = self.memory[loc]
-
-        #Jump to the offset
-        if self.c == True:
-            #Recalculate if negative
-            if value >= 128:
-                value -= 256
-
-            self.pc = self.pc + value
-
-            print(f"Negative: {value}")
-    # BNE
-    def BNE(self, mode):
-        loc = self.get_location_by_mode(mode)
-        value = self.memory[loc]
-
-        #Jump to the offset
-        if self.z == False:
-            #Recalculate if negative
-            if value >= 128:
-                value -= 256
-
-            self.pc = self.pc + value
-
-            print(f"Negative: {value}")
-    # BEQ
-    def BEQ(self, mode):
-        loc = self.get_location_by_mode(mode)
-        value = self.memory[loc]
-
-        #Jump to the offset
-        if self.z == True:
-            #Recalculate if negative
-            if value >= 128:
-                value -= 256
-
-            self.pc = self.pc + value
-
-            print(f"Negative: {value}")
-
-        #Transfer X Register to Stack Pointer
-    def TXS(self, mode):
-        self.sp = self.x
-
-        #Transfer Stack Pointer to X Register
-    def TSX(self, mode):
-        self.x = self.sp
-
-        #Set NZ flags
-        self.set_nz(self.x)
-
-    #Push accumulator
     def PHA(self, mode):
         #Find the location
         loc = 0x100 + self.sp #self.sp is the stack pointer
@@ -515,24 +642,7 @@ class CPU:
 
         self.sp = self.wrap(self.sp)
 
-    #Pull Accumulator
-    def PLA(self, mode):
-        #Increments the stack pointer 
-        self.sp += 1 
-
-        #wrap
-        self.sp = self.wrap(self.sp)
-
-        # Finds location 
-        loc = 0x100 + self.sp
-
-        #Copies value to accumulator
-        self.a = self.memory[loc]
-
-        #Set NZ flags
-        self.set_nz(self.a)
-
-    #PHP
+    # Pull Accumulator
     def PHP(self, mode):
         val = 0
         if self.n == True:
@@ -564,7 +674,22 @@ class CPU:
 
         self.sp = self.wrap(self.sp)
 
-    #PLP
+    def PLA(self, mode):
+        #Increments the stack pointer 
+        self.sp += 1 
+
+        #wrap
+        self.sp = self.wrap(self.sp)
+
+        # Finds location 
+        loc = 0x100 + self.sp
+
+        #Copies value to accumulator
+        self.a = self.memory[loc]
+
+        #Set NZ flags
+        self.set_nz(self.a)
+
     def PLP(self, mode):
         #Increments the stack pointer 
         self.sp += 1 
@@ -616,180 +741,6 @@ class CPU:
         else:
             self.c = False
 
-    #JSR
-    def JSR(self,mode):
-        #Return location (-1)
-        loc = self.pc + 2
-
-        msb = loc % 256
-        lsb = loc - (msb * 256)
-
-        # Copy from the accumulator 
-        temp_a = self.a
-
-        #Push onto stack
-        self.a = msb
-        self.PHA(mode)
-
-        self.a = lsb
-        self.PHA(mode)
-
-        #Copy temp onto a
-        self.a = temp_a
-
-        #Change program counter to new location
-        loc = self.get_location_by_mode(mode)
-
-        #Set program counter to location
-        self.pc = loc - self.increments[mode]
-
-
-    def RTS(self, mode):
-        #Copy a value to temp
-        temp_a = self.a
-
-        #Pull lsb
-        self.PLA(mode)
-        lsb = self.a
-
-        #Pull msb
-        self.PLA(mode)
-        msb = self.a
-
-        #Restore temp to a
-        self.a = temp_a
-
-        #Set PC to return address
-        self.pc = msb * 256 + lsb
-
-    def ADC(self, mode):
-        loc = self.get_location_by_mode(mode)
-        value = self.memory[loc]
-
-        #add value to accumulator
-        self.a += value
-
-
-        #if carry flag is set
-        if self.c == True:
-            self.a += 1
-        
-        #carry and wrap around
-        if self.a > 255:
-            self.c = True
-            self.a = self.wrap(self.a)
-        else:
-            self.c = False
-        
-        #Set NZ flags
-        self.set_nz(self.a)
-
-    def AND(self, mode):
-        loc = self.get_location_by_mode(mode)
-        value = self.memory[loc]
-
-        #Perform logical AND
-        self.a = self.a & value
-
-        #Set NZ flags
-        self.set_nz(self.a)
-    
-    def ORA(self, mode):
-        loc = self.get_location_by_mode(mode)
-        value = self.memory[loc]
-
-        #Perform logical AND
-        self.a = self.a | value
-
-        #Set NZ flags
-        self.set_nz(self.a)
-
-    def EOR(self, mode):
-        loc = self.get_location_by_mode(mode)
-        value = self.memory[loc]
-
-        #Perform logical AND
-        self.a = self.a ^ value
-
-        #Set NZ flags
-        self.set_nz(self.a)
-
-    def SBC(self, mode):
-        loc = self.get_location_by_mode(mode)
-        value = self.memory[loc]
-
-        #Subtract value to accumulator
-        self.a -= value
-
-        # Check carry flag 
-        if self.c == False:
-            self.a -= 1
-
-        if self.a < 0:
-            self.a = self.wrap(self.a)
-
-            if self.c == True:
-                self.c = False
-            else:
-                self.c = True
-        
-        #Set NZ flags
-        self.set_nz(self.a)
-
-    def NOP(self, mode):
-        pass
-    
-    def ASL(self, mode):
-        if mode == Mode.ACCUMULATOR:
-            value = self.a 
-        else:
-            loc = self.get_location_by_mode(mode)
-            value = self.memory[loc]
-        
-        #Check the leftmost bit
-        if value & 128 == 128:
-            self.c = True 
-
-        #shift left
-        value = value << 1
-
-        #wrap
-        value = self.wrap(value)
-
-        #Places back into the accumulator
-        if mode == Mode.ACCUMULATOR:
-            self.a = value
-        else:
-            self.memory[loc] = value
-
-        #Set NZ flags
-        self.set_nz(value)
-
-    def LSR(self, mode): # Logical Shift Right(for my sake)
-        if mode == Mode.ACCUMULATOR:
-            value = self.a 
-        else:
-            loc = self.get_location_by_mode(mode)
-            value = self.memory[loc]
-        
-        #Check the rightmost bit
-        if value & 1 == 1:
-            self.c = True 
-        #shift right
-        value = value >> 1
-
-        #wrap
-        value = self.wrap(value)
-
-        #Places back into the accumulator
-        if mode == Mode.ACCUMULATOR:
-            self.a = value
-        else:
-            self.memory[loc] = value
-
-        # Set NZ flags
-        self.set_nz(value)
-    
     def ROL(self, mode):
         if mode == Mode.ACCUMULATOR:
             value = self.a 
@@ -862,6 +813,115 @@ class CPU:
 
         #Set NZ flags
         self.set_nz(value)
+
+    def RTS(self, mode):
+        #Copy a value to temp
+        temp_a = self.a
+
+        #Pull lsb
+        self.PLA(mode)
+        lsb = self.a
+
+        #Pull msb
+        self.PLA(mode)
+        msb = self.a
+
+        #Restore temp to a
+        self.a = temp_a
+
+        #Set PC to return address
+        self.pc = msb * 256 + lsb
+
+    def SBC(self, mode):
+        loc = self.get_location_by_mode(mode)
+        value = self.memory[loc]
+
+        #Subtract value to accumulator
+        self.a -= value
+
+        # Check carry flag 
+        if self.c == False:
+            self.a -= 1
+
+        if self.a < 0:
+            self.a = self.wrap(self.a)
+
+            if self.c == True:
+                self.c = False
+            else:
+                self.c = True
+        
+        #Set NZ flags
+        self.set_nz(self.a)
+
+    def SEC(self, mode):
+        self.c = True
+
+    # Clearing Interrupt Flag
+    def SED(self, mode):
+        self.d = True
+
+    # Jumping to a new location
+    def SEI(self, mode):
+        self.i = True
+
+    # Clearing Overflow Flag
+    def STA(self, mode):
+        # Find the location based on the mode
+        loc = self.get_location_by_mode(mode)
+        #Update memory
+        self.memory[loc] = self.a
+        
+    # Storing X Register
+    def STX(self, mode):
+        loc = self.get_location_by_mode(mode)
+        #Update memory
+        self.memory[loc] = self.x
+        
+    # Storing Y Register
+    def STY(self, mode):
+        loc = self.get_location_by_mode(mode)
+        #Update memory
+        self.memory[loc] = self.y
+    
+    # Incrementing X Register
+    def TAX(self, mode):
+        self.x = self.a
+
+        #Set NZ flags
+        self.set_nz(self.x)
+
+    # Transferring X Register to Accumulator
+    def TAY(self, mode):
+        self.y = self.a
+
+        #Set NZ flags
+        self.set_nz(self.y)
+
+    # Transferring Y Register to Accumulator
+    def TSX(self, mode):
+        self.x = self.sp
+
+        #Set NZ flags
+        self.set_nz(self.x)
+
+    #Push accumulator
+    def TXA(self, mode):
+        self.a = self.x
+
+        #Set NZ flags
+        self.set_nz(self.a)
+
+    # Transferring Accumulator to Y Register
+    def TXS(self, mode):
+        self.sp = self.x
+
+        #Transfer Stack Pointer to X Register
+    def TYA(self, mode):
+        self.a = self.y
+
+        #Set NZ flags
+        self.set_nz(self.a)
 
     # Testing / Debugging
     def push(self, value):
