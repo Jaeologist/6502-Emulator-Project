@@ -8,7 +8,7 @@
 - Program counter
 - Stack pointer
 - System simulator 
-- Addressing modes Immediate, Zeropage, ZeropageX, Absolute, AbsoluteX, AbsoluteY, Implied, Indirect, Relative, Accumulator
+- Addressing modes Immediate, Zeropage, ZeropageX, Absolute, AbsoluteX, AbsoluteY, Implied, Indirect, Relative, Accumulator, INDIRECTX, INDIRECTY
 - Flags negative, carry, zero, decimal, break, interupt, overflow
 - Loading instructions LDA, LDX, LDY
 - Storing instructions STA, STX, STY
@@ -24,8 +24,8 @@
 - Subtract/Add Instructions SBC, ADC
 - Shift instructions LSR, ASL
 - Rotate instructions ROL, ROR
+- Test Bit instructions BIT
 
 **Currently Working On**
-- BIT instruction
-- INDIRECTX mode
-- INDIRECTY mode
+-B flag
+-D flag
