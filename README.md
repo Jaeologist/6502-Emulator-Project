@@ -27,6 +27,7 @@
 - Test Bit instructions BIT
 
 **Currently Working On**
+
 -B flag
 -D flag
 - BRK instruction
