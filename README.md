@@ -29,3 +29,5 @@
 **Currently Working On**
 -B flag
 -D flag
+- BRK instruction
+- RTI instruction
