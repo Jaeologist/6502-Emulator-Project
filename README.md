@@ -25,10 +25,8 @@
 - Shift instructions LSR, ASL
 - Rotate instructions ROL, ROR
 - Test Bit instructions BIT
+- Break instruction BRK
+- Return instruction RTI
 
 **Currently Working On**
-
--B flag
 -D flag
-- BRK instruction
-- RTI instruction
