@@ -28,5 +28,5 @@
 - Break instruction BRK
 - Return instruction RTI
 
-**Currently Working On**
+**Currently Working On:**
 -D flag
